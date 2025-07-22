@@ -1,0 +1,73 @@
+const Purchase = require('../models/Purchase');
+const Medicine = require('../models/Medicine');
+
+exports.getAllPurchases = async (req, res) => {
+  try {
+    const purchases = await Purchase.find().populate('medicineId');
+    res.json(purchases);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.createPurchase = async (req, res) => {
+  try {
+    const { medicineId, quantity, purchasePrice, supplier, discount } = req.body;
+
+    const newPurchase = new Purchase({
+      medicineId,
+      quantity,
+      purchasePrice,
+      supplier,
+      discount
+    });
+    const savedPurchase = await newPurchase.save();
+
+    const medicine = await Medicine.findById(medicineId);
+    if (!medicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+
+    medicine.quantity += parseInt(quantity); // add purchased quantity
+    await medicine.save();
+
+    res.status(201).json(savedPurchase);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.updatePurchase = async (req, res) => {
+  try {
+    const updated = await Purchase.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Purchase not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deletePurchase = async (req, res) => {
+  try {
+    const purchase = await Purchase.findById(req.params.id);
+    if (!purchase) return res.status(404).json({ message: 'Purchase not found' });
+
+    const medicine = await Medicine.findById(purchase.medicineId);
+    if (medicine) {
+      medicine.quantity -= purchase.quantity;
+
+      if (medicine.quantity < 0) medicine.quantity = 0;
+
+      await medicine.save();
+    }
+
+    await purchase.deleteOne();
+    res.json({ message: 'Purchase deleted and inventory updated' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

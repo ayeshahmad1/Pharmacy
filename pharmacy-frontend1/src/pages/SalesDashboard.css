@@ -1,0 +1,56 @@
+/* src/pages/SalesDashboard.css */
+
+.sales-page {
+  padding: 24px;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  color: #222;
+}
+
+.sales-title {
+  font-size: 26px;
+  margin-bottom: 16px;
+  color: #222;
+  text-align: center;
+}
+
+.sales-summary {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #0a7b34;
+  text-align: center;
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  color: #333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sales-table th,
+.sales-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  vertical-align: top;
+}
+
+.sales-table th {
+  background-color: #e6e6e6;
+  font-weight: bold;
+}
+
+.sales-table ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sales-table li {
+  text-align: left;
+  font-size: 14px;
+}
