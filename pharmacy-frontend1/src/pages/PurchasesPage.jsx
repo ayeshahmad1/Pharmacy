@@ -4,34 +4,47 @@ import axios from 'axios';
 import './PurchasesPage.css';
 
 function PurchasesPage() {
+  const API = import.meta.env.VITE_API_URL;
   const [purchases, setPurchases] = useState([]);
   const [medicines, setMedicines] = useState([]);
   const [form, setForm] = useState({ medicineId: '', quantity: '', purchasePrice: '', supplier: '' });
   const [editingId, setEditingId] = useState(null);
 
-  const fetchData = async () => {
-    const [purRes, medRes] = await Promise.all([
-      axios.get('http://localhost:5000/api/purchases'),
-      axios.get('http://localhost:5000/api/medicines')
-    ]);
-    setPurchases(purRes.data);
-    setMedicines(medRes.data);
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [purRes, medRes] = await Promise.all([
+          axios.get(`${API}/purchases`),
+          axios.get(`${API}/medicines`)
+        ]);
+        setPurchases(purRes.data);
+        setMedicines(medRes.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
     fetchData();
-  }, []);
+  }, [API]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      await axios.put(`http://localhost:5000/api/purchases/${editingId}`, form);
-      setEditingId(null);
-    } else {
-      await axios.post('http://localhost:5000/api/purchases', form);
+    try {
+      if (editingId) {
+        await axios.put(`${API}/purchases/${editingId}`, form);
+        setEditingId(null);
+      } else {
+        await axios.post(`${API}/purchases`, form);
+      }
+      setForm({ medicineId: '', quantity: '', purchasePrice: '', supplier: '' });
+      const [purRes, medRes] = await Promise.all([
+        axios.get(`${API}/purchases`),
+        axios.get(`${API}/medicines`)
+      ]);
+      setPurchases(purRes.data);
+      setMedicines(medRes.data);
+    } catch (error) {
+      console.error('Error submitting form:', error);
     }
-    setForm({ medicineId: '', quantity: '', purchasePrice: '', supplier: '' });
-    fetchData();
   };
 
   const handleEdit = (p) => {
@@ -45,8 +58,17 @@ function PurchasesPage() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/purchases/${id}`);
-    fetchData();
+    try {
+      await axios.delete(`${API}/purchases/${id}`);
+      const [purRes, medRes] = await Promise.all([
+        axios.get(`${API}/purchases`),
+        axios.get(`${API}/medicines`)
+      ]);
+      setPurchases(purRes.data);
+      setMedicines(medRes.data);
+    } catch (error) {
+      console.error('Error deleting purchase:', error);
+    }
   };
 
   return (

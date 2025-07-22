@@ -4,13 +4,14 @@ import axios from 'axios';
 import './SalesDashboard.css';
 
 function SalesDashboard() {
+  const API = import.meta.env.VITE_API_URL;
   const [sales, setSales] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
 
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/sales');
+        const res = await axios.get(`${API}/sales`);
         setSales(res.data);
         const total = res.data.reduce((sum, sale) => sum + sale.totalPrice, 0);
         setTotalRevenue(total);
@@ -19,7 +20,7 @@ function SalesDashboard() {
       }
     };
     fetchSales();
-  }, []);
+  }, [API]);
 
   return (
     <div className="sales-page">

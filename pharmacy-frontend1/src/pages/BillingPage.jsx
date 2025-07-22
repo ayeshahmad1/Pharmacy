@@ -6,6 +6,7 @@ import './BillingPage.css';
 import ReceiptPrint from '../components/ReceiptPrint';
 
 function BillingPage() {
+  const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [medicines, setMedicines] = useState([]);
   const [cart, setCart] = useState([]);
@@ -24,10 +25,10 @@ function BillingPage() {
   }, [navigate]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/medicines')
+    axios.get(`${API}/medicines`)
       .then(res => setMedicines(res.data))
       .catch(err => console.error('Error fetching medicines:', err));
-  }, []);
+  }, [API]);
 
   const handleAddToCart = () => {
     const med = medicines.find(m => m.name.toLowerCase() === searchText.toLowerCase());
@@ -86,7 +87,7 @@ function BillingPage() {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/sales', {
+      await axios.post(`${API}/sales`, {
         items: cart.map(({ _id, quantity, price }) => ({ medicineId: _id, quantity, price })),
         totalPrice: netTotal,
         cashierId: user._id
@@ -97,7 +98,7 @@ function BillingPage() {
         setCart([]);
         setDiscount(0);
         setAmountReceived(0);
-      }, 100); // Give React time to update the receipt
+      }, 100);
     } catch (err) {
       console.error('Error submitting sale:', err);
       alert('Error submitting sale');
@@ -185,7 +186,6 @@ function BillingPage() {
         <p>Change Due: Rs.{changeDue.toFixed(2)}</p>
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
 
-        {/* Receipt is rendered for print, but hidden on screen */}
         <div>
           <ReceiptPrint
             ref={receiptRef}

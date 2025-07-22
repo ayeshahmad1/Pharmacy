@@ -3,29 +3,39 @@ import axios from 'axios';
 import './MedicinesPage.css';
 
 function MedicinesPage() {
+  const API = import.meta.env.VITE_API_URL;
   const [medicines, setMedicines] = useState([]);
   const [form, setForm] = useState({ name: '', type: '', batchNo: '', expiryDate: '', quantity: '', price: '', supplier: '' });
   const [editingId, setEditingId] = useState(null);
 
-  const fetchMedicines = async () => {
-    const res = await axios.get('http://localhost:5000/api/medicines');
-    setMedicines(res.data);
-  };
-
   useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const res = await axios.get(`${API}/medicines`);
+        setMedicines(res.data);
+      } catch (error) {
+        console.error('Error fetching medicines:', error);
+      }
+    };
     fetchMedicines();
-  }, []);
+  }, [API]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (editingId) {
-      await axios.put(`http://localhost:5000/api/medicines/${editingId}`, form);
+      await axios.put(`${API}/medicines/${editingId}`, form);
       setEditingId(null);
     } else {
-      await axios.post('http://localhost:5000/api/medicines', form);
+      await axios.post(`${API}/medicines`, form);
     }
     setForm({ name: '', type: '', batchNo: '', expiryDate: '', quantity: '', price: '', supplier: '' });
-    fetchMedicines();
+
+    try {
+      const res = await axios.get(`${API}/medicines`);
+      setMedicines(res.data);
+    } catch (error) {
+      console.error('Error fetching medicines:', error);
+    }
   };
 
   const handleEdit = (med) => {
@@ -34,8 +44,13 @@ function MedicinesPage() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/medicines/${id}`);
-    fetchMedicines();
+    await axios.delete(`${API}/medicines/${id}`);
+    try {
+      const res = await axios.get(`${API}/medicines`);
+      setMedicines(res.data);
+    } catch (error) {
+      console.error('Error fetching medicines:', error);
+    }
   };
 
   return (
