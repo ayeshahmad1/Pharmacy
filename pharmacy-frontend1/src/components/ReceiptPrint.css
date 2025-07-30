@@ -87,6 +87,24 @@
     display: none;
   }
 }
+
+@media print {
+  body {
+    margin: 0;
+    font-size: 12px;
+  }
+  .receipt-container {
+    width: 58mm;
+    padding: 5px;
+  }
+  table {
+    width: 100%;
+  }
+  button, .no-print {
+    display: none !important;
+  }
+}
+
 @media print {
   body * {
     visibility: hidden !important;
