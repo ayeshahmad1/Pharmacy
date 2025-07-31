@@ -2,28 +2,33 @@
 import React, { forwardRef } from 'react';
 import './ReceiptPrint.css';
 
-const ReceiptPrint = forwardRef(({ cart, total, discount, netTotal, amountReceived, changeDue }, ref) => {
+const ReceiptPrint = forwardRef(function ReceiptPrint(
+  { cart, total, discount, netTotal, amountReceived, changeDue },
+  ref
+) {
   const currentDate = new Date().toLocaleString();
 
   return (
     <div className="receipt-container" ref={ref}>
-      <h3 className="receipt-title">Pharmacy POS</h3>
-      <p>{currentDate}</p>
+      <div className="receipt-header">
+        <h3>Pharmacy POS</h3>
+        <p>{currentDate}</p>
+      </div>
 
       <hr />
 
       <table className="receipt-table">
         <thead>
           <tr>
-            <th>Item</th>
+            <th>Name</th>
             <th>Qty</th>
             <th>Price</th>
             <th>Total</th>
           </tr>
         </thead>
         <tbody>
-          {cart.map((item, i) => (
-            <tr key={i}>
+          {cart.map((item, idx) => (
+            <tr key={idx}>
               <td>{item.name}</td>
               <td>{item.quantity}</td>
               <td>{item.originalPrice.toFixed(2)}</td>
@@ -35,7 +40,7 @@ const ReceiptPrint = forwardRef(({ cart, total, discount, netTotal, amountReceiv
 
       <hr />
 
-      <div className="totals">
+      <div className="highlight-box">
         <p>Total: Rs.{total.toFixed(2)}</p>
         <p>Discount (10%): Rs.{discount.toFixed(2)}</p>
         <p>Net Total: Rs.{netTotal.toFixed(2)}</p>
@@ -43,7 +48,7 @@ const ReceiptPrint = forwardRef(({ cart, total, discount, netTotal, amountReceiv
         <p>Returned: Rs.{changeDue.toFixed(2)}</p>
       </div>
 
-      <p className="thanks">Thank you for your purchase!</p>
+      <div className="thank-you-box">Thank you for your purchase!</div>
     </div>
   );
 });
