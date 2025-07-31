@@ -1,3 +1,4 @@
+// src/pages/BillingPage.jsx
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,8 +13,7 @@ function BillingPage() {
   const [searchText, setSearchText] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [amountReceived, setAmountReceived] = useState(0);
-  const [shouldPrint, setShouldPrint] = useState(false);
-  const receiptRef = useRef(null);
+  const receiptRef = useRef();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -42,7 +42,8 @@ function BillingPage() {
       return;
     }
 
-    const discountedPrice = parseFloat((med.price * 0.9).toFixed(2));
+    const originalPrice = parseFloat(med.price);
+    const discountedPrice = parseFloat((originalPrice * 0.9).toFixed(2));
 
     if (existingItem) {
       const updatedCart = cart.map(item => {
@@ -51,7 +52,7 @@ function BillingPage() {
           return {
             ...item,
             quantity: newQty,
-            total: newQty * discountedPrice
+            total: parseFloat((discountedPrice * newQty).toFixed(2))
           };
         }
         return item;
@@ -61,10 +62,10 @@ function BillingPage() {
       const item = {
         _id: med._id,
         name: med.name,
-        originalPrice: med.price,
+        originalPrice,
         price: discountedPrice,
         quantity: quantity,
-        total: discountedPrice * quantity
+        total: parseFloat((discountedPrice * quantity).toFixed(2))
       };
       setCart([...cart, item]);
     }
@@ -77,7 +78,7 @@ function BillingPage() {
     setCart(cart.filter(item => item._id !== id));
   };
 
-  const originalTotal = cart.reduce((acc, item) => acc + (item.originalPrice * item.quantity), 0);
+  const originalTotal = cart.reduce((acc, item) => acc + item.originalPrice * item.quantity, 0);
   const discountAmount = parseFloat((originalTotal * 0.1).toFixed(2));
   const netTotal = parseFloat((originalTotal - discountAmount).toFixed(2));
   const changeDue = Math.max(amountReceived - netTotal, 0);
@@ -86,7 +87,7 @@ function BillingPage() {
     const user = JSON.parse(localStorage.getItem('user'));
     if (cart.length === 0) return;
     if (amountReceived < netTotal) {
-      alert('Amount received is less than the total.');
+      alert('Amount received is less than the net total.');
       return;
     }
 
@@ -101,24 +102,16 @@ function BillingPage() {
         cashierId: user._id
       });
 
-      setShouldPrint(true);
+      setTimeout(() => {
+        window.print();
+        setCart([]);
+        setAmountReceived(0);
+      }, 100);
     } catch (err) {
       console.error('Checkout failed:', err);
       alert('Error completing the sale');
     }
   };
-
-  // Print side-effect
-  useEffect(() => {
-    if (shouldPrint) {
-      setTimeout(() => {
-        window.print();
-        setShouldPrint(false);
-        setCart([]);
-        setAmountReceived(0);
-      }, 100);
-    }
-  }, [shouldPrint]);
 
   return (
     <div className="billing-wrapper">
@@ -159,9 +152,9 @@ function BillingPage() {
               <tr key={item._id}>
                 <td>{index + 1}</td>
                 <td>{item.name}</td>
-                <td>Rs.{item.price}</td>
+                <td>Rs.{item.price.toFixed(2)}</td>
                 <td>{item.quantity}</td>
-                <td>Rs.{item.total}</td>
+                <td>Rs.{item.total.toFixed(2)}</td>
                 <td><button onClick={() => handleRemoveItem(item._id)}>Remove</button></td>
               </tr>
             ))}
@@ -184,18 +177,18 @@ function BillingPage() {
         />
         <p>Change Due: Rs.{changeDue.toFixed(2)}</p>
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
-      </div>
 
-      {/* Conditionally Rendered Receipt */}
-      <div style={{ display: 'none' }}>
-        <ReceiptPrint
-          cart={cart}
-          originalTotal={originalTotal}
-          discountAmount={discountAmount}
-          netTotal={netTotal}
-          amountReceived={amountReceived}
-          changeDue={changeDue}
-        />
+        {/* Hidden receipt for printing */}
+        <div style={{ display: 'none' }}>
+          <ReceiptPrint
+            cart={cart}
+            originalTotal={originalTotal}
+            discountAmount={discountAmount}
+            netTotal={netTotal}
+            amountReceived={amountReceived}
+            changeDue={changeDue}
+          />
+        </div>
       </div>
     </div>
   );

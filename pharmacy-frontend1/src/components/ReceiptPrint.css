@@ -2,22 +2,24 @@
 
 .receipt-container {
   width: 58mm;
-  padding: 8px;
+  padding: 4px;
   font-family: monospace;
-  font-size: 24px;
+  font-size: 12px;
   line-height: 1.4;
   color: #000;
   text-align: center;
+  display: none; /* Hidden on screen, only shown in print */
 }
 
-.receipt-header h3 {
-  margin: 4px 0;
-  font-size: 28px;
+.receipt-container h3 {
+  font-size: 18px;
   font-weight: bold;
+  margin: 4px 0;
 }
 
 .receipt-container p {
   margin: 4px 0;
+  font-size: 12px;
   text-align: left;
 }
 
@@ -25,13 +27,13 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 6px;
-  font-size: 24px;
+  font-size: 12px;
 }
 
 .receipt-table th,
 .receipt-table td {
   border-bottom: 1px dotted #999;
-  padding: 4px 0;
+  padding: 2px 0;
   text-align: left;
 }
 
@@ -39,57 +41,52 @@
   font-weight: bold;
 }
 
-.receipt-container hr {
-  border: none;
-  border-top: 1px dashed #333;
-  margin: 6px 0;
-}
-
-.right {
-  float: right;
-}
-
-.highlight-box {
-  margin-top: 10px;
-  font-size: 24px;
-  font-weight: bold;
+.totals {
+  margin-top: 8px;
   text-align: left;
+  font-size: 12px;
 }
 
-.thank-you-box {
-  margin-top: 12px;
-  font-size: 22px;
+.totals p {
+  margin: 2px 0;
+}
+
+.thanks {
+  margin-top: 8px;
   font-style: italic;
   text-align: center;
+  font-size: 12px;
 }
 
-/* Hide receipt on screen */
-@media screen {
-  .receipt-container {
-    display: none;
-  }
-}
-
-/* Print only the receipt */
+/* Print styles */
 @media print {
-  body * {
-    visibility: hidden !important;
+  body {
+    margin: 0;
+    padding: 0;
   }
-  .receipt-container, .receipt-container * {
-    visibility: visible !important;
-  }
+
   .receipt-container {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 58mm !important;
-    background: #fff !important;
-    z-index: 9999 !important;
-    display: block !important;
-    font-size: 24px !important;
-    font-family: monospace !important;
-    padding: 8px !important;
+    display: block;
+    width: 58mm;
+    padding: 0;
+    margin: 0 auto;
+    font-size: 12px;
+    background: #fff;
   }
+
+  .receipt-container * {
+    visibility: visible;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-container,
+  .receipt-container * {
+    visibility: visible;
+  }
+
   @page {
     size: 58mm auto;
     margin: 0;

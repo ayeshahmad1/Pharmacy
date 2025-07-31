@@ -27,8 +27,8 @@ function ReceiptPrint({ cart, originalTotal, discountAmount, netTotal, amountRec
             <tr key={idx}>
               <td>{item.name}</td>
               <td>{item.quantity}</td>
-              <td>{item.originalPrice.toFixed(2)}</td>
-              <td>{(item.originalPrice * item.quantity).toFixed(2)}</td>
+              <td>{item.originalPrice?.toFixed(2) || '0.00'}</td>
+              <td>{(item.originalPrice * item.quantity)?.toFixed(2) || '0.00'}</td>
             </tr>
           ))}
         </tbody>
@@ -37,11 +37,11 @@ function ReceiptPrint({ cart, originalTotal, discountAmount, netTotal, amountRec
       <hr />
 
       <div className="highlight-box">
-        <p>Total: Rs.{originalTotal.toFixed(2)}</p>
-        <p>Discount (10%): Rs.{discountAmount.toFixed(2)}</p>
-        <p>Net Total: Rs.{netTotal.toFixed(2)}</p>
-        <p>Received: Rs.{amountReceived.toFixed(2)}</p>
-        <p>Returned: Rs.{changeDue.toFixed(2)}</p>
+        <p>Total: Rs.{originalTotal?.toFixed(2) || '0.00'}</p>
+        <p>Discount (10%): Rs.{discountAmount?.toFixed(2) || '0.00'}</p>
+        <p>Net Total: Rs.{netTotal?.toFixed(2) || '0.00'}</p>
+        <p>Received: Rs.{amountReceived?.toFixed(2) || '0.00'}</p>
+        <p>Returned: Rs.{changeDue?.toFixed(2) || '0.00'}</p>
       </div>
 
       <div className="thank-you-box">Thank you for your purchase!</div>
