@@ -128,5 +128,6 @@
     width: 100% !important;
     background: #fff !important;
     z-index: 9999 !important;
+    display: block !important;
   }
 }

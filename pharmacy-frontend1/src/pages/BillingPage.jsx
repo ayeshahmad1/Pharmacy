@@ -187,18 +187,16 @@ function BillingPage() {
       </div>
 
       {/* Conditionally Rendered Receipt */}
-      {shouldPrint && (
-        <div>
-          <ReceiptPrint
-            cart={cart}
-            originalTotal={originalTotal}
-            discountAmount={discountAmount}
-            netTotal={netTotal}
-            amountReceived={amountReceived}
-            changeDue={changeDue}
-          />
-        </div>
-      )}
+      <div style={{ display: 'none' }}>
+        <ReceiptPrint
+          cart={cart}
+          originalTotal={originalTotal}
+          discountAmount={discountAmount}
+          netTotal={netTotal}
+          amountReceived={amountReceived}
+          changeDue={changeDue}
+        />
+      </div>
     </div>
   );
 }
