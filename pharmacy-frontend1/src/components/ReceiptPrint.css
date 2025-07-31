@@ -10,9 +10,9 @@
   text-align: center;
 }
 
-.receipt-container h3 {
+.receipt-header h3 {
   margin: 4px 0;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
 }
 
@@ -42,7 +42,7 @@
 .receipt-container hr {
   border: none;
   border-top: 1px dashed #333;
-  margin: 8px 0;
+  margin: 6px 0;
 }
 
 .right {
@@ -51,47 +51,22 @@
 
 .highlight-box {
   margin-top: 10px;
-  font-weight: bold;
   font-size: 24px;
+  font-weight: bold;
+  text-align: left;
 }
 
 .thank-you-box {
-  margin-top: 10px;
-  font-style: italic;
+  margin-top: 12px;
   font-size: 22px;
+  font-style: italic;
   text-align: center;
 }
 
-.print-btn {
-  margin-top: 10px;
-  padding: 6px 12px;
-  font-size: 14px;
-  background-color: #000;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 24px;
-  border-radius: 8px;
-  min-width: 320px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
-  text-align: center;
+@media screen {
+  .receipt-container {
+    display: none;
+  }
 }
 
 @media print {
@@ -100,29 +75,46 @@
     font-size: 24px;
   }
 
-  .receipt-container h3 {
-    display: block;
-    font-size: 24px;
-    padding: 0;
-    margin: 0 auto;
-  }
-
   .receipt-container {
     width: 58mm;
     font-family: monospace;
     font-size: 24px;
     padding: 0;
     margin: 0 auto;
+    display: block;
   }
 
-  .receipt-table th,
-  .receipt-table td {
+  .receipt-header h3 {
+    font-size: 28px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .receipt-logo {
+    display: none;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 4px 0;
+    text-align: left;
     font-size: 24px;
   }
 
-  .highlight-box,
+  .highlight-box {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
   .thank-you-box {
-    font-size: 24px;
+    margin-top: 12px;
+    font-size: 22px;
+    text-align: center;
   }
 
   @page {
@@ -131,26 +123,19 @@
   }
 
   body * {
-    visibility: hidden;
+    visibility: hidden !important;
   }
 
   .receipt-container, .receipt-container * {
-    visibility: visible;
+    visibility: visible !important;
   }
 
   .receipt-container {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    background: #fff;
-    z-index: 9999;
-    display: block;
-  }
-
-  .print-btn,
-  .modal-overlay,
-  .modal-content {
-    display: none;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    background: #fff !important;
+    z-index: 9999 !important;
   }
 }

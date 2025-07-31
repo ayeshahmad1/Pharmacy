@@ -1,9 +1,9 @@
 // src/pages/BillingPage.jsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './BillingPage.css';
-import ReceiptPrint from '../components/ReceiptPrint';
+import ReceiptPrintTrigger from '../components/ReceiptPrint';
 
 function BillingPage() {
   const API = import.meta.env.VITE_APP_URL;
@@ -13,7 +13,7 @@ function BillingPage() {
   const [searchText, setSearchText] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [amountReceived, setAmountReceived] = useState(0);
-  const receiptRef = useRef();
+  const [printReceipt, setPrintReceipt] = useState(false);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -42,73 +42,70 @@ function BillingPage() {
       return;
     }
 
-    const discountedPrice = parseFloat((med.price * 0.9).toFixed(2));
-    const item = {
-      _id: med._id,
-      name: med.name,
-      originalPrice: med.price,
-      price: discountedPrice,
-      quantity,
-      total: discountedPrice * quantity
-    };
+    const discountedPrice = parseFloat((med.price * 0.9).toFixed(2)); // 10% discount
 
     if (existingItem) {
-      const updatedCart = cart.map(i => {
-        if (i._id === med._id) {
-          const newQty = i.quantity + quantity;
+      const updatedCart = cart.map(item => {
+        if (item._id === med._id) {
+          const newQty = item.quantity + quantity;
           return {
-            ...i,
+            ...item,
             quantity: newQty,
-            total: newQty * i.price
+            total: newQty * discountedPrice
           };
         }
-        return i;
+        return item;
       });
       setCart(updatedCart);
     } else {
+      const item = {
+        _id: med._id,
+        name: med.name,
+        quantity,
+        price: discountedPrice,
+        originalPrice: med.price,
+        total: discountedPrice * quantity
+      };
       setCart([...cart, item]);
     }
 
-    setSearchText('');
     setQuantity(1);
+    setSearchText('');
   };
 
   const handleRemoveItem = (id) => {
     setCart(cart.filter(item => item._id !== id));
   };
 
-  const totalOriginal = cart.reduce((acc, item) => acc + item.originalPrice * item.quantity, 0);
-  const totalDiscount = cart.reduce((acc, item) => acc + (item.originalPrice - item.price) * item.quantity, 0);
-  const netTotal = cart.reduce((acc, item) => acc + item.total, 0);
+  const total = cart.reduce((acc, item) => acc + item.total, 0);
+  const originalTotal = cart.reduce((acc, item) => acc + item.originalPrice * item.quantity, 0);
+  const discount = parseFloat((originalTotal - total).toFixed(2));
+  const netTotal = total;
   const changeDue = Math.max(amountReceived - netTotal, 0);
 
   const handleCheckout = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (cart.length === 0) return;
     if (amountReceived < netTotal) {
-      alert('Amount received is less than the total.');
+      alert('Amount received is less than the net total.');
       return;
     }
 
     try {
       await axios.post(`${API}/sales`, {
-        items: cart.map(({ _id, quantity, originalPrice }) => ({
-          medicineId: _id,
-          quantity,
-          price: originalPrice
-        })),
-        totalPrice: totalOriginal,
+        items: cart.map(({ _id, quantity, price }) => ({ medicineId: _id, quantity, price })),
+        totalPrice: netTotal,
         cashierId: user._id
       });
-
+      setPrintReceipt(true);
       setTimeout(() => {
-        window.print();
         setCart([]);
         setAmountReceived(0);
-      }, 100);
+        setPrintReceipt(false);
+      }, 500);
     } catch (err) {
-      console.error('Error during checkout:', err);
-      alert('Checkout failed.');
+      console.error('Error submitting sale:', err);
+      alert('Error submitting sale');
     }
   };
 
@@ -163,30 +160,28 @@ function BillingPage() {
 
       <div className="billing-right">
         <h3>Summary</h3>
-        <p>Total: Rs.{netTotal.toFixed(2)}</p>
-        <p>Amount Received</p>
+        <p>Total (after discount): Rs.{total.toFixed(2)}</p>
+        <p>Amount Received (Rs.)</p>
         <input
           type="number"
           value={amountReceived}
           onChange={(e) => setAmountReceived(Number(e.target.value))}
           min={0}
+          className="discount-input"
         />
         <p>Change Due: Rs.{changeDue.toFixed(2)}</p>
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
       </div>
 
-      {/* Hidden Receipt Component */}
-      <div style={{ display: 'none' }}>
-        <ReceiptPrint
-          ref={receiptRef}
-          cart={cart}
-          total={totalOriginal}
-          discount={totalDiscount}
-          netTotal={netTotal}
-          amountReceived={amountReceived}
-          changeDue={changeDue}
-        />
-      </div>
+      <ReceiptPrintTrigger
+        cart={cart}
+        total={originalTotal}
+        discount={discount}
+        netTotal={netTotal}
+        amountReceived={amountReceived}
+        changeDue={changeDue}
+        trigger={printReceipt}
+      />
     </div>
   );
 }
