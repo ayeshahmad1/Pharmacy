@@ -70,57 +70,48 @@
 }
 
 @media print {
-  body {
-    margin: 0;
-    font-size: 24px;
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-container, .receipt-container * {
+    visibility: visible;
   }
 
   .receipt-container {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 58mm;
-    font-family: monospace;
     font-size: 24px;
-    padding: 0;
-    margin: 0 auto;
-    display: block;
+    font-family: monospace;
+    background: #fff;
+    padding: 8px;
+    z-index: 9999;
   }
 
-  .receipt-header h3 {
-    font-size: 28px;
-    margin: 0;
-    padding: 0;
-  }
-
-  .receipt-logo {
-    display: none;
-  }
-
-  table {
+  table.receipt-table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 8px;
   }
 
-  th, td {
-    padding: 4px 0;
+  table.receipt-table th, table.receipt-table td {
     text-align: left;
+    padding: 4px 0;
     font-size: 24px;
   }
 
-  .highlight-box {
-    font-size: 24px;
-    font-weight: bold;
+  .highlight-box, .thank-you-box {
     margin-top: 10px;
-  }
-
-  .thank-you-box {
-    margin-top: 12px;
-    font-size: 22px;
-    text-align: center;
+    font-size: 24px;
   }
 
   @page {
-    margin: 0;
     size: 58mm auto;
+    margin: 0;
   }
+
 
   body * {
     visibility: hidden !important;

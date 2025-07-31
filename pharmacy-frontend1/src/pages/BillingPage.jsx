@@ -175,15 +175,15 @@ function BillingPage() {
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
 
         {/* Printable Receipt kept off-screen but not hidden */}
-        <div className="receipt-container-print">
-          <ReceiptPrint
-            cart={cart}
-            originalTotal={originalTotal}
-            discountAmount={discountAmount}
-            netTotal={netTotal}
-            amountReceived={amountReceived}
-            changeDue={changeDue}
-          />
+   <div style={{ position: 'absolute', left: '-9999px' }}>
+  <ReceiptPrint
+    cart={cart}
+    originalTotal={originalTotal}
+    discountAmount={discountAmount}
+    netTotal={netTotal}
+    amountReceived={amountReceived}
+    changeDue={changeDue}
+  />
         </div>
       </div>
     </div>
