@@ -82,6 +82,16 @@
   text-align: center;
 }
 
+.receipt-logo {
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
 @media screen {
   .receipt-container {
     display: none;
@@ -97,7 +107,7 @@
   .receipt-container h3{
     display: block;
     width: 58mm; 
-    font-size: 50px;
+    font-size: 25px;
     padding: 0;
     margin: 0 auto;
   }
