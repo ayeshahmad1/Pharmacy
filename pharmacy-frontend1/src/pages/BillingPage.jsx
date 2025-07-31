@@ -1,5 +1,4 @@
-// src/pages/BillingPage.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './BillingPage.css';
@@ -13,6 +12,8 @@ function BillingPage() {
   const [searchText, setSearchText] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [amountReceived, setAmountReceived] = useState(0);
+  const [shouldPrint, setShouldPrint] = useState(false);
+  const receiptRef = useRef(null);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -81,7 +82,7 @@ function BillingPage() {
   const netTotal = parseFloat((originalTotal - discountAmount).toFixed(2));
   const changeDue = Math.max(amountReceived - netTotal, 0);
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (cart.length === 0) return;
     if (amountReceived < netTotal) {
@@ -89,25 +90,35 @@ function BillingPage() {
       return;
     }
 
-    axios.post(`${API}/sales`, {
-      items: cart.map(({ _id, quantity, originalPrice }) => ({
-        medicineId: _id,
-        quantity,
-        price: originalPrice
-      })),
-      totalPrice: netTotal,
-      cashierId: user._id
-    }).then(() => {
-      setTimeout(() => {
-        window.print();
-        setCart([]);
-        setAmountReceived(0);
-      }, 300);
-    }).catch(err => {
+    try {
+      await axios.post(`${API}/sales`, {
+        items: cart.map(({ _id, quantity, originalPrice }) => ({
+          medicineId: _id,
+          quantity,
+          price: originalPrice
+        })),
+        totalPrice: netTotal,
+        cashierId: user._id
+      });
+
+      setShouldPrint(true);
+    } catch (err) {
       console.error('Checkout failed:', err);
       alert('Error completing the sale');
-    });
+    }
   };
+
+  // Print side-effect
+  useEffect(() => {
+    if (shouldPrint) {
+      setTimeout(() => {
+        window.print();
+        setShouldPrint(false);
+        setCart([]);
+        setAmountReceived(0);
+      }, 100);
+    }
+  }, [shouldPrint]);
 
   return (
     <div className="billing-wrapper">
@@ -150,7 +161,7 @@ function BillingPage() {
                 <td>{item.name}</td>
                 <td>Rs.{item.price}</td>
                 <td>{item.quantity}</td>
-                <td>Rs.{item.total.toFixed(2)}</td>
+                <td>Rs.{item.total}</td>
                 <td><button onClick={() => handleRemoveItem(item._id)}>Remove</button></td>
               </tr>
             ))}
@@ -173,19 +184,21 @@ function BillingPage() {
         />
         <p>Change Due: Rs.{changeDue.toFixed(2)}</p>
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
-
-        {/* Printable Receipt kept off-screen but not hidden */}
-   <div style={{ position: 'absolute', left: '-9999px' }}>
-  <ReceiptPrint
-    cart={cart}
-    originalTotal={originalTotal}
-    discountAmount={discountAmount}
-    netTotal={netTotal}
-    amountReceived={amountReceived}
-    changeDue={changeDue}
-  />
-        </div>
       </div>
+
+      {/* Conditionally Rendered Receipt */}
+      {shouldPrint && (
+        <div>
+          <ReceiptPrint
+            cart={cart}
+            originalTotal={originalTotal}
+            discountAmount={discountAmount}
+            netTotal={netTotal}
+            amountReceived={amountReceived}
+            changeDue={changeDue}
+          />
+        </div>
+      )}
     </div>
   );
 }
