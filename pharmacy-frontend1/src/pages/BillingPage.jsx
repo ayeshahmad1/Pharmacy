@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './BillingPage.css';
-import ReceiptPrintTrigger from '../components/ReceiptPrint';
+import ReceiptPrint from '../components/ReceiptPrint';
 
 function BillingPage() {
   const API = import.meta.env.VITE_APP_URL;
@@ -13,7 +13,6 @@ function BillingPage() {
   const [searchText, setSearchText] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [amountReceived, setAmountReceived] = useState(0);
-  const [printReceipt, setPrintReceipt] = useState(false);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -27,7 +26,7 @@ function BillingPage() {
     axios.get(`${API}/medicines`)
       .then(res => setMedicines(res.data))
       .catch(err => console.error('Error fetching medicines:', err));
-  }, []);
+  }, [API]);
 
   const handleAddToCart = () => {
     const med = medicines.find(m => m.name.toLowerCase() === searchText.toLowerCase());
@@ -42,7 +41,7 @@ function BillingPage() {
       return;
     }
 
-    const discountedPrice = parseFloat((med.price * 0.9).toFixed(2)); // 10% discount
+    const discountedPrice = parseFloat((med.price * 0.9).toFixed(2));
 
     if (existingItem) {
       const updatedCart = cart.map(item => {
@@ -61,9 +60,9 @@ function BillingPage() {
       const item = {
         _id: med._id,
         name: med.name,
-        quantity,
-        price: discountedPrice,
         originalPrice: med.price,
+        price: discountedPrice,
+        quantity: quantity,
         total: discountedPrice * quantity
       };
       setCart([...cart, item]);
@@ -77,35 +76,34 @@ function BillingPage() {
     setCart(cart.filter(item => item._id !== id));
   };
 
-  const total = cart.reduce((acc, item) => acc + item.total, 0);
-  const originalTotal = cart.reduce((acc, item) => acc + item.originalPrice * item.quantity, 0);
-  const discount = parseFloat((originalTotal - total).toFixed(2));
-  const netTotal = total;
+  const originalTotal = cart.reduce((acc, item) => acc + (item.originalPrice * item.quantity), 0);
+  const discountAmount = parseFloat((originalTotal * 0.1).toFixed(2));
+  const netTotal = parseFloat((originalTotal - discountAmount).toFixed(2));
   const changeDue = Math.max(amountReceived - netTotal, 0);
 
   const handleCheckout = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (cart.length === 0) return;
     if (amountReceived < netTotal) {
-      alert('Amount received is less than the net total.');
+      alert('Amount received is less than the total.');
       return;
     }
 
     try {
       await axios.post(`${API}/sales`, {
-        items: cart.map(({ _id, quantity, price }) => ({ medicineId: _id, quantity, price })),
+        items: cart.map(({ _id, quantity, originalPrice }) => ({ medicineId: _id, quantity, price: originalPrice })),
         totalPrice: netTotal,
         cashierId: user._id
       });
-      setPrintReceipt(true);
+
       setTimeout(() => {
+        window.print();
         setCart([]);
         setAmountReceived(0);
-        setPrintReceipt(false);
-      }, 500);
+      }, 100);
     } catch (err) {
-      console.error('Error submitting sale:', err);
-      alert('Error submitting sale');
+      console.error('Checkout failed:', err);
+      alert('Error completing the sale');
     }
   };
 
@@ -148,9 +146,9 @@ function BillingPage() {
               <tr key={item._id}>
                 <td>{index + 1}</td>
                 <td>{item.name}</td>
-                <td>Rs.{item.price.toFixed(2)}</td>
+                <td>Rs.{item.price}</td>
                 <td>{item.quantity}</td>
-                <td>Rs.{item.total.toFixed(2)}</td>
+                <td>Rs.{item.total}</td>
                 <td><button onClick={() => handleRemoveItem(item._id)}>Remove</button></td>
               </tr>
             ))}
@@ -160,8 +158,10 @@ function BillingPage() {
 
       <div className="billing-right">
         <h3>Summary</h3>
-        <p>Total (after discount): Rs.{total.toFixed(2)}</p>
-        <p>Amount Received (Rs.)</p>
+        <p>Total (Original): Rs.{originalTotal.toFixed(2)}</p>
+        <p>Discount (10%): Rs.{discountAmount.toFixed(2)}</p>
+        <p>Net Total: Rs.{netTotal.toFixed(2)}</p>
+        <label>Amount Received (Rs.)</label>
         <input
           type="number"
           value={amountReceived}
@@ -171,17 +171,19 @@ function BillingPage() {
         />
         <p>Change Due: Rs.{changeDue.toFixed(2)}</p>
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
-      </div>
 
-      <ReceiptPrintTrigger
-        cart={cart}
-        total={originalTotal}
-        discount={discount}
-        netTotal={netTotal}
-        amountReceived={amountReceived}
-        changeDue={changeDue}
-        trigger={printReceipt}
-      />
+        {/* Hidden Receipt for Printing */}
+        <div style={{ display: 'none' }}>
+          <ReceiptPrint
+            cart={cart}
+            originalTotal={originalTotal}
+            discountAmount={discountAmount}
+            netTotal={netTotal}
+            amountReceived={amountReceived}
+            changeDue={changeDue}
+          />
+        </div>
+      </div>
     </div>
   );
 }
