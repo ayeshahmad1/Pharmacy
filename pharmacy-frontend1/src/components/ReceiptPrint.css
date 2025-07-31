@@ -91,19 +91,41 @@
 @media print {
   body {
     margin: 0;
-    font-size: 12px;
+    font-size: 16px; /* Increase this value as needed */
   }
+
   .receipt-container {
     width: 58mm;
-    padding: 5px;
+    font-family: monospace;
+    font-size: 16px; /* Increase here too */
+    padding: 0;
+    margin: 0 auto;
   }
+
   table {
     width: 100%;
+    border-collapse: collapse;
   }
-  button, .no-print {
-    display: none !important;
+
+  th, td {
+    padding: 4px 0;
+    text-align: left;
+    font-size: 16px; /* And optionally here */
+  }
+
+  .thanks {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px; /* You can make this bigger for visibility */
+  }
+
+  @page {
+    margin: 0;
+    size: 58mm auto;
   }
 }
+
 
 @media print {
   body * {
