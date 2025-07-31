@@ -1,9 +1,9 @@
-// src/components/ReceiptPrint.jsx
 import React, { forwardRef } from 'react';
 import './ReceiptPrint.css';
 
-const Receipt = forwardRef(({ cart, netTotal, amountReceived, changeDue }, ref) => (
+const Receipt = forwardRef(({ cart, total, discount, netTotal, amountReceived, changeDue }, ref) => (
   <div className="receipt-container" ref={ref}>
+    <image src="/18234108_v1033-b-04-b.svg" alt="Logo" className="receipt-logo" />
     <h3>Dr. Saima Clinic</h3>
     <p>Date: {new Date().toLocaleString()}</p>
     <hr />
@@ -26,21 +26,17 @@ const Receipt = forwardRef(({ cart, netTotal, amountReceived, changeDue }, ref) 
       </tbody>
     </table>
     <hr />
-    <p>Total: Rs.{netTotal.toFixed(2)}</p>
+    <p>Total: Rs.{total.toFixed(2)}</p>
+    <p>Discount: Rs.{discount.toFixed(2)}</p>
+    <p><strong>Net Total: Rs.{netTotal.toFixed(2)}</strong></p>
     <p>Paid: Rs.{amountReceived.toFixed(2)}</p>
     <p>Returned: Rs.{changeDue.toFixed(2)}</p>
     <p className="thanks">Thank you!</p>
   </div>
 ));
 
-const ReceiptPrint = forwardRef(({ cart, netTotal, amountReceived, changeDue }, ref) => (
-  <Receipt
-    ref={ref}
-    cart={cart}
-    netTotal={netTotal}
-    amountReceived={amountReceived}
-    changeDue={changeDue}
-  />
+const ReceiptPrint = forwardRef((props, ref) => (
+  <Receipt {...props} ref={ref} />
 ));
 
 export default ReceiptPrint;

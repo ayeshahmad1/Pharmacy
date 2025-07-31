@@ -187,13 +187,15 @@ function BillingPage() {
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
 
         <div>
-          <ReceiptPrint
-            ref={receiptRef}
-            cart={cart}
-            netTotal={netTotal}
-            amountReceived={amountReceived}
-            changeDue={changeDue}
-          />
+        <ReceiptPrint
+        ref={receiptRef}
+        cart={cart}
+        total={total}
+        discount={discount}
+        netTotal={netTotal}
+        amountReceived={amountReceived}
+        changeDue={changeDue}
+      />
         </div>
       </div>
     </div>
