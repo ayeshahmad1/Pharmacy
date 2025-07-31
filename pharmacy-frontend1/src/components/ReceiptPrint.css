@@ -113,7 +113,7 @@ hr {
 @media print {
   body {
     margin: 0;
-    font-size: 12px;
+    font-size: 24px;
   }
 
   .receipt-container {
@@ -132,7 +132,7 @@ hr {
   .receipt-container p,
   .highlight-box,
   .thank-you-box {
-    font-size: 14px;
+    font-size: 24px;
   }
 
   .receipt-logo {
