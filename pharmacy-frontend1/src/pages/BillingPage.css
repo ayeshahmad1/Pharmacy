@@ -133,3 +133,9 @@ th {
   border-radius: 6px;
   color: #000;
 }
+
+.receipt-container-print {
+  position: absolute;
+  top: 0;
+  left: -9999px;
+}

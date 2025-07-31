@@ -81,7 +81,7 @@ function BillingPage() {
   const netTotal = parseFloat((originalTotal - discountAmount).toFixed(2));
   const changeDue = Math.max(amountReceived - netTotal, 0);
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (cart.length === 0) return;
     if (amountReceived < netTotal) {
@@ -89,22 +89,24 @@ function BillingPage() {
       return;
     }
 
-    try {
-      await axios.post(`${API}/sales`, {
-        items: cart.map(({ _id, quantity, originalPrice }) => ({ medicineId: _id, quantity, price: originalPrice })),
-        totalPrice: netTotal,
-        cashierId: user._id
-      });
-
+    axios.post(`${API}/sales`, {
+      items: cart.map(({ _id, quantity, originalPrice }) => ({
+        medicineId: _id,
+        quantity,
+        price: originalPrice
+      })),
+      totalPrice: netTotal,
+      cashierId: user._id
+    }).then(() => {
       setTimeout(() => {
         window.print();
         setCart([]);
         setAmountReceived(0);
-      }, 100);
-    } catch (err) {
+      }, 300);
+    }).catch(err => {
       console.error('Checkout failed:', err);
       alert('Error completing the sale');
-    }
+    });
   };
 
   return (
@@ -148,7 +150,7 @@ function BillingPage() {
                 <td>{item.name}</td>
                 <td>Rs.{item.price}</td>
                 <td>{item.quantity}</td>
-                <td>Rs.{item.total}</td>
+                <td>Rs.{item.total.toFixed(2)}</td>
                 <td><button onClick={() => handleRemoveItem(item._id)}>Remove</button></td>
               </tr>
             ))}
@@ -172,8 +174,8 @@ function BillingPage() {
         <p>Change Due: Rs.{changeDue.toFixed(2)}</p>
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
 
-        {/* Hidden Receipt for Printing */}
-        <div style={{ display: 'none' }}>
+        {/* Printable Receipt kept off-screen but not hidden */}
+        <div className="receipt-container-print">
           <ReceiptPrint
             cart={cart}
             originalTotal={originalTotal}

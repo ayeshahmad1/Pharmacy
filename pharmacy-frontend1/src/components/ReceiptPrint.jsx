@@ -1,38 +1,34 @@
 // src/components/ReceiptPrint.jsx
-import React, { forwardRef } from 'react';
 import './ReceiptPrint.css';
 
-const ReceiptPrint = forwardRef(({ cart, amountReceived, changeDue }, ref) => {
-  if (!cart || cart.length === 0) return null;
-
-  const originalTotal = cart.reduce((acc, item) => acc + item.originalPrice * item.quantity, 0);
-  const discountAmount = originalTotal * 0.1;
-  const netTotal = originalTotal - discountAmount;
+function ReceiptPrint({ cart, originalTotal, discountAmount, netTotal, amountReceived, changeDue }) {
+  const currentDate = new Date().toLocaleString();
 
   return (
-    <div className="receipt-container" ref={ref}>
+    <div className="receipt-container">
       <div className="receipt-header">
-        <h3>Dr. Saima Clinic</h3>
-        <p>Date: {new Date().toLocaleString()}</p>
-        <hr />
+        <h3>Pharmacy POS</h3>
+        <p>{currentDate}</p>
       </div>
+
+      <hr />
 
       <table className="receipt-table">
         <thead>
           <tr>
             <th>Name</th>
             <th>Qty</th>
-            <th>Rate</th>
+            <th>Price</th>
             <th>Total</th>
           </tr>
         </thead>
         <tbody>
-          {cart.map((item) => (
-            <tr key={item._id}>
+          {cart.map((item, idx) => (
+            <tr key={idx}>
               <td>{item.name}</td>
               <td>{item.quantity}</td>
-              <td>Rs.{item.originalPrice.toFixed(2)}</td>
-              <td>Rs.{(item.originalPrice * item.quantity).toFixed(2)}</td>
+              <td>{item.originalPrice.toFixed(2)}</td>
+              <td>{(item.originalPrice * item.quantity).toFixed(2)}</td>
             </tr>
           ))}
         </tbody>
@@ -41,18 +37,16 @@ const ReceiptPrint = forwardRef(({ cart, amountReceived, changeDue }, ref) => {
       <hr />
 
       <div className="highlight-box">
-        <p>Total Amount: <span className="right">Rs.{originalTotal.toFixed(2)}</span></p>
-        <p>Discount (10%): <span className="right">Rs.{discountAmount.toFixed(2)}</span></p>
-        <p>Net Total: <span className="right">Rs.{netTotal.toFixed(2)}</span></p>
-        <p>Amount Received: <span className="right">Rs.{amountReceived.toFixed(2)}</span></p>
-        <p>Change Returned: <span className="right">Rs.{changeDue.toFixed(2)}</span></p>
+        <p>Total: Rs.{originalTotal.toFixed(2)}</p>
+        <p>Discount (10%): Rs.{discountAmount.toFixed(2)}</p>
+        <p>Net Total: Rs.{netTotal.toFixed(2)}</p>
+        <p>Received: Rs.{amountReceived.toFixed(2)}</p>
+        <p>Returned: Rs.{changeDue.toFixed(2)}</p>
       </div>
 
-      <div className="thank-you-box">
-        <p>Thank you for your purchase!</p>
-      </div>
+      <div className="thank-you-box">Thank you for your purchase!</div>
     </div>
   );
-});
+}
 
 export default ReceiptPrint;
