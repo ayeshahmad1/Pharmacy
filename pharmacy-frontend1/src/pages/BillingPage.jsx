@@ -1,3 +1,4 @@
+// src/pages/BillingPage.jsx
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,7 +12,6 @@ function BillingPage() {
   const [cart, setCart] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [discount, setDiscount] = useState(0);
   const [amountReceived, setAmountReceived] = useState(0);
   const receiptRef = useRef();
 
@@ -27,7 +27,7 @@ function BillingPage() {
     axios.get(`${API}/medicines`)
       .then(res => setMedicines(res.data))
       .catch(err => console.error('Error fetching medicines:', err));
-  }, [API]);
+  }, []);
 
   const handleAddToCart = () => {
     const med = medicines.find(m => m.name.toLowerCase() === searchText.toLowerCase());
@@ -42,80 +42,74 @@ function BillingPage() {
       return;
     }
 
-    const discountedPrice = med.price * 0.9;
+    const discountedPrice = parseFloat((med.price * 0.9).toFixed(2));
+    const item = {
+      _id: med._id,
+      name: med.name,
+      originalPrice: med.price,
+      price: discountedPrice,
+      quantity,
+      total: discountedPrice * quantity
+    };
 
     if (existingItem) {
-      const updatedCart = cart.map(item => {
-        if (item._id === med._id) {
-          const newQty = item.quantity + quantity;
+      const updatedCart = cart.map(i => {
+        if (i._id === med._id) {
+          const newQty = i.quantity + quantity;
           return {
-            ...item,
+            ...i,
             quantity: newQty,
-            total: newQty * discountedPrice,
-            originalPrice: med.price,
-            discountedPrice: discountedPrice
+            total: newQty * i.price
           };
         }
-        return item;
+        return i;
       });
       setCart(updatedCart);
     } else {
-      const item = {
-        _id: med._id,
-        name: med.name,
-        originalPrice: med.price,
-        discountedPrice: discountedPrice,
-        quantity: quantity,
-        total: discountedPrice * quantity
-      };
       setCart([...cart, item]);
     }
 
-    setQuantity(1);
     setSearchText('');
+    setQuantity(1);
   };
 
   const handleRemoveItem = (id) => {
     setCart(cart.filter(item => item._id !== id));
   };
 
-  const total = cart.reduce((acc, item) => acc + item.total, 0);
-  const netTotal = Math.max(total - discount, 0);
+  const totalOriginal = cart.reduce((acc, item) => acc + item.originalPrice * item.quantity, 0);
+  const totalDiscount = cart.reduce((acc, item) => acc + (item.originalPrice - item.price) * item.quantity, 0);
+  const netTotal = cart.reduce((acc, item) => acc + item.total, 0);
   const changeDue = Math.max(amountReceived - netTotal, 0);
 
   const handleCheckout = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (cart.length === 0) return;
     if (amountReceived < netTotal) {
-      alert('Amount received is less than the net total.');
+      alert('Amount received is less than the total.');
       return;
     }
+
     try {
       await axios.post(`${API}/sales`, {
-        items: cart.map(({ _id, quantity, originalPrice }) => ({ medicineId: _id, quantity, price: originalPrice })),
-        totalPrice: netTotal,
+        items: cart.map(({ _id, quantity, originalPrice }) => ({
+          medicineId: _id,
+          quantity,
+          price: originalPrice
+        })),
+        totalPrice: totalOriginal,
         cashierId: user._id
       });
-      alert('Sale completed!');
+
       setTimeout(() => {
         window.print();
         setCart([]);
-        setDiscount(0);
         setAmountReceived(0);
       }, 100);
     } catch (err) {
-      console.error('Error submitting sale:', err);
-      alert('Error submitting sale');
+      console.error('Error during checkout:', err);
+      alert('Checkout failed.');
     }
-  };
-
-  const handleDiscountChange = (e) => {
-    const value = Number(e.target.value);
-    if (value > total) {
-      alert('Discount cannot exceed total sale amount.');
-      return;
-    }
-    setDiscount(value);
   };
 
   return (
@@ -157,7 +151,7 @@ function BillingPage() {
               <tr key={item._id}>
                 <td>{index + 1}</td>
                 <td>{item.name}</td>
-                <td>Rs.{item.discountedPrice.toFixed(2)}</td>
+                <td>Rs.{item.price.toFixed(2)}</td>
                 <td>{item.quantity}</td>
                 <td>Rs.{item.total.toFixed(2)}</td>
                 <td><button onClick={() => handleRemoveItem(item._id)}>Remove</button></td>
@@ -169,38 +163,29 @@ function BillingPage() {
 
       <div className="billing-right">
         <h3>Summary</h3>
-        <p>Total: Rs.{total.toFixed(2)}</p>
-        <label>Discount (Rs.)</label>
-        <input
-          type="number"
-          value={discount}
-          onChange={handleDiscountChange}
-          min={0}
-          className="discount-input"
-        />
-        <p>Net Total: Rs.{netTotal.toFixed(2)}</p>
-        <label>Amount Received (Rs.)</label>
+        <p>Total: Rs.{netTotal.toFixed(2)}</p>
+        <p>Amount Received</p>
         <input
           type="number"
           value={amountReceived}
           onChange={(e) => setAmountReceived(Number(e.target.value))}
           min={0}
-          className="discount-input"
         />
         <p>Change Due: Rs.{changeDue.toFixed(2)}</p>
         <button onClick={handleCheckout} disabled={cart.length === 0 || amountReceived < netTotal}>Checkout</button>
+      </div>
 
-        <div style={{ display: 'none' }}>
-          <ReceiptPrint
-            ref={receiptRef}
-            cart={cart}
-            total={cart.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0)}
-            discount={cart.reduce((sum, item) => sum + item.originalPrice * item.quantity * 0.1, 0)}
-            netTotal={netTotal}
-            amountReceived={amountReceived}
-            changeDue={changeDue}
-          />
-        </div>
+      {/* Hidden Receipt Component */}
+      <div style={{ display: 'none' }}>
+        <ReceiptPrint
+          ref={receiptRef}
+          cart={cart}
+          total={totalOriginal}
+          discount={totalDiscount}
+          netTotal={netTotal}
+          amountReceived={amountReceived}
+          changeDue={changeDue}
+        />
       </div>
     </div>
   );

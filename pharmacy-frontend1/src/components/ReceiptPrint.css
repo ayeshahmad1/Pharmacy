@@ -8,7 +8,6 @@
   line-height: 1.4;
   color: #000;
   text-align: center;
-  background: #fff;
 }
 
 .receipt-container h3 {
@@ -43,37 +42,30 @@
 .receipt-container hr {
   border: none;
   border-top: 1px dashed #333;
-  margin: 6px 0;
-}
-
-.highlight-box {
-  margin-top: 6px;
-  font-weight: bold;
-  text-align: left;
+  margin: 8px 0;
 }
 
 .right {
   float: right;
 }
 
-.thank-you-box {
-  margin-top: 12px;
-  text-align: center;
-  font-style: italic;
+.highlight-box {
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 24px;
 }
 
-.receipt-logo {
-  width: 100%;
-  height: auto;
-  margin: 0 auto 10px;
-  object-fit: contain;
-  display: block;
+.thank-you-box {
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 22px;
+  text-align: center;
 }
 
 .print-btn {
   margin-top: 10px;
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: 14px;
   background-color: #000;
   color: #fff;
   border: none;
@@ -102,12 +94,6 @@
   text-align: center;
 }
 
-@media screen {
-  .receipt-container {
-    display: none;
-  }
-}
-
 @media print {
   body {
     margin: 0;
@@ -116,7 +102,6 @@
 
   .receipt-container h3 {
     display: block;
-    width: 58mm;
     font-size: 24px;
     padding: 0;
     margin: 0 auto;
@@ -130,30 +115,13 @@
     margin: 0 auto;
   }
 
-  .receipt-container p,
-  .receipt-container th,
-  .receipt-container td {
+  .receipt-table th,
+  .receipt-table td {
     font-size: 24px;
   }
 
-  .receipt-container hr {
-    border-top: 1px dashed #000;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  th, td {
-    padding: 4px 0;
-    text-align: left;
-  }
-
+  .highlight-box,
   .thank-you-box {
-    margin-top: 10px;
-    text-align: center;
-    font-weight: bold;
     font-size: 24px;
   }
 
@@ -163,46 +131,26 @@
   }
 
   body * {
-    visibility: hidden !important;
+    visibility: hidden;
   }
 
   .receipt-container, .receipt-container * {
-    visibility: visible !important;
+    visibility: visible;
   }
 
   .receipt-container {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    background: #fff !important;
-    z-index: 9999 !important;
-    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 9999;
+    display: block;
   }
 
-  .print-btn {
-    display: none;
-  }
-
+  .print-btn,
   .modal-overlay,
   .modal-content {
-    position: static !important;
-    background: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    min-width: 0 !important;
-  }
-
-  .receipt-logo {
-    justify-content: center;
-    align-items: center;
-    display: inline;
-    width: 100%;
-    height: auto;
-    margin: 0 auto;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    margin-bottom: 10px;
+    display: none;
   }
 }
