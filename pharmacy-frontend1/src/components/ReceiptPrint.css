@@ -91,13 +91,13 @@
 @media print {
   body {
     margin: 0;
-    font-size: 16px; /* Increase this value as needed */
+    font-size: 30px; /* Increase this value as needed */
   }
 
   .receipt-container {
     width: 58mm;
     font-family: monospace;
-    font-size: 16px; /* Increase here too */
+    font-size: 30px; /* Increase here too */
     padding: 0;
     margin: 0 auto;
   }
@@ -110,7 +110,7 @@
   th, td {
     padding: 4px 0;
     text-align: left;
-    font-size: 16px; /* And optionally here */
+    font-size: 30px; /* And optionally here */
   }
 
   .thanks {
