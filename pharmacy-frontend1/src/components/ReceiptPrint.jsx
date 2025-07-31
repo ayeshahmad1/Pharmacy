@@ -3,9 +3,9 @@ import './ReceiptPrint.css';
 
 const Receipt = forwardRef(({ cart, total, discount, netTotal, amountReceived, changeDue }, ref) => (
   <div className="receipt-container" ref={ref}>
-    <image src="/18234108_v1033-b-04-b.svg" alt="Logo" className="receipt-logo" />
-    <h3>Dr. Saima Clinic</h3>
-    <p>Date: {new Date().toLocaleString()}</p>
+    <img src="/18234108_v1033-b-04-b.svg" alt="Logo" className="receipt-logo" />
+    <h2 className="clinic-name">Dr. Saima Clinic</h2>
+    <p className="receipt-date">Date: {new Date().toLocaleString()}</p>
     <hr />
     <table className="receipt-table">
       <thead>
@@ -26,12 +26,14 @@ const Receipt = forwardRef(({ cart, total, discount, netTotal, amountReceived, c
       </tbody>
     </table>
     <hr />
-    <p>Total: Rs.{total.toFixed(2)}</p>
-    <p>Discount: Rs.{discount.toFixed(2)}</p>
-    <p><strong>Net Total: Rs.{netTotal.toFixed(2)}</strong></p>
-    <p>Paid: Rs.{amountReceived.toFixed(2)}</p>
-    <p>Returned: Rs.{changeDue.toFixed(2)}</p>
-    <p className="thanks">Thank you!</p>
+    <div className="totals">
+      <p>Total: <span>Rs.{total.toFixed(2)}</span></p>
+      <p>Discount: <span>Rs.{discount.toFixed(2)}</span></p>
+      <p className="net-total">Net Total: <span>Rs.{netTotal.toFixed(2)}</span></p>
+      <p>Paid: <span>Rs.{amountReceived.toFixed(2)}</span></p>
+      <p>Returned: <span>Rs.{changeDue.toFixed(2)}</span></p>
+    </div>
+    <p className="thanks">Thank you for visiting!</p>
   </div>
 ));
 
