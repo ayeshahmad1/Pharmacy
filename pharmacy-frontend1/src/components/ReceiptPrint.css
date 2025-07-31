@@ -1,38 +1,38 @@
 /* src/components/ReceiptPrint.css */
 
 .receipt-container {
-  width: 57mm;
+  width: 58mm;
   padding: 8px;
   font-family: monospace;
-  font-size: 12px;
-  line-height: 1.3;
+  font-size: 24px;
+  line-height: 1.4;
   color: #000;
   text-align: center;
+  background: #fff;
 }
 
 .receipt-container h3 {
   margin: 4px 0;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: bold;
 }
 
 .receipt-container p {
   margin: 4px 0;
   text-align: left;
-  font-size: 12px;
 }
 
 .receipt-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 6px;
-  font-size: 12px;
+  font-size: 24px;
 }
 
 .receipt-table th,
 .receipt-table td {
   border-bottom: 1px dotted #999;
-  padding: 2px;
+  padding: 4px 0;
   text-align: left;
 }
 
@@ -46,32 +46,62 @@
   margin: 6px 0;
 }
 
-.receipt-logo {
-  width: 100%;
-  height: auto;
-  margin: 0 auto 10px;
-  object-fit: contain;
-}
-
 .highlight-box {
-  margin-top: 8px;
-  padding: 6px;
-  border: 1px dashed #000;
+  margin-top: 6px;
   font-weight: bold;
   text-align: left;
-}
-
-.thank-you-box {
-  margin-top: 10px;
-  font-style: italic;
-  text-align: center;
 }
 
 .right {
   float: right;
 }
 
-/* Hide on screen, show in print */
+.thank-you-box {
+  margin-top: 12px;
+  text-align: center;
+  font-style: italic;
+}
+
+.receipt-logo {
+  width: 100%;
+  height: auto;
+  margin: 0 auto 10px;
+  object-fit: contain;
+  display: block;
+}
+
+.print-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  min-width: 320px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
 @media screen {
   .receipt-container {
     display: none;
@@ -84,22 +114,30 @@
     font-size: 24px;
   }
 
-  .receipt-container {
+  .receipt-container h3 {
     display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
+    width: 58mm;
+    font-size: 24px;
+    padding: 0;
+    margin: 0 auto;
+  }
+
+  .receipt-container {
     width: 58mm;
     font-family: monospace;
     font-size: 24px;
     padding: 0;
     margin: 0 auto;
-    background: #fff;
-    z-index: 9999;
   }
 
-  .receipt-container h3 {
-    font-size: 28px;
+  .receipt-container p,
+  .receipt-container th,
+  .receipt-container td {
+    font-size: 24px;
+  }
+
+  .receipt-container hr {
+    border-top: 1px dashed #000;
   }
 
   table {
@@ -107,22 +145,16 @@
     border-collapse: collapse;
   }
 
-  th,
-  td {
+  th, td {
     padding: 4px 0;
     text-align: left;
-    font-size: 24px;
   }
 
-  .highlight-box,
   .thank-you-box {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
     font-size: 24px;
-  }
-
-  .modal-overlay,
-  .modal-content,
-  .print-btn {
-    display: none !important;
   }
 
   @page {
@@ -131,9 +163,46 @@
   }
 
   body * {
-    visibility: hidden;
+    visibility: hidden !important;
   }
+
   .receipt-container, .receipt-container * {
-    visibility: visible;
+    visibility: visible !important;
+  }
+
+  .receipt-container {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    background: #fff !important;
+    z-index: 9999 !important;
+    display: block !important;
+  }
+
+  .print-btn {
+    display: none;
+  }
+
+  .modal-overlay,
+  .modal-content {
+    position: static !important;
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+  }
+
+  .receipt-logo {
+    justify-content: center;
+    align-items: center;
+    display: inline;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    margin-bottom: 10px;
   }
 }
