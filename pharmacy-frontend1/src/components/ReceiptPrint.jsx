@@ -1,10 +1,11 @@
+// src/components/ReceiptPrint.jsx
 import React, { forwardRef } from 'react';
 import './ReceiptPrint.css';
 
 const Receipt = forwardRef(({ cart, total, discount, netTotal, amountReceived, changeDue }, ref) => (
   <div className="receipt-container" ref={ref}>
     <div className="receipt-header">
-      {/* <img src="/18234108_v1033-b-04-b.svg" alt="Logo" className="receipt-logo" /> */}
+      <img src="/logo.png" alt="Logo" className="receipt-logo" />
       <h3>Dr. Saima Clinic</h3>
       <p>Date: {new Date().toLocaleString()}</p>
     </div>
@@ -22,14 +23,14 @@ const Receipt = forwardRef(({ cart, total, discount, netTotal, amountReceived, c
           <tr key={item._id}>
             <td>{item.name}</td>
             <td>{item.quantity}</td>
-            <td>Rs.{item.total.toFixed(2)}</td>
+            <td>Rs.{(item.price * item.quantity).toFixed(2)}</td> {/* Show original total */}
           </tr>
         ))}
       </tbody>
     </table>
     <hr />
-    <p>Total: <span className="right">Rs.{total.toFixed(2)}</span></p>
-    <p>Discount: <span className="right">Rs.{discount.toFixed(2)}</span></p>
+    <p>Total (Original): <span className="right">Rs.{total.toFixed(2)}</span></p>
+    <p>Discount (10%): <span className="right">Rs.{discount.toFixed(2)}</span></p>
     <p><strong>Net Total: <span className="right">Rs.{netTotal.toFixed(2)}</span></strong></p>
     <p>Paid: <span className="right">Rs.{amountReceived.toFixed(2)}</span></p>
     <div className="highlight-box">
