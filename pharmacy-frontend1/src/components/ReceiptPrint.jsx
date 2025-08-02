@@ -4,7 +4,7 @@ import './ReceiptPrint.css';
 const Receipt = forwardRef(({ cart, total, discount, netTotal, amountReceived, changeDue }, ref) => (
   <div className="receipt-container" ref={ref}>
     <div className="receipt-header">
-      <img src="/18234108_v1033-b-04-b.svg" alt="Logo" className="receipt-logo" />
+      {/* <img src="/18234108_v1033-b-04-b.svg" alt="Logo" className="receipt-logo" /> */}
       <h3>Dr. Saima Clinic</h3>
       <p>Date: {new Date().toLocaleString()}</p>
     </div>
