@@ -106,13 +106,18 @@ function BillingPage() {
   };
 
   const handleDiscountChange = (e) => {
-    const value = Number(e.target.value);
-    if (value > 10% total) {
-      alert('Discount cannot exceed 10%.');
-      return;
-    }
+  const value = Number(e.target.value);
+  const maxDiscount = total * 0.1;
+
+  if (value > maxDiscount) {
+    alert(`Discount cannot exceed 10% of total (Rs. ${maxDiscount.toFixed(2)}).`);
+    setDiscount(maxDiscount);
+  } else if (value < 0) {
+    setDiscount(0);
+  } else {
     setDiscount(value);
-  };
+  }
+};
 
   return (
     <div className="billing-wrapper">
