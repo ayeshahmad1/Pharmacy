@@ -107,8 +107,8 @@ function BillingPage() {
 
   const handleDiscountChange = (e) => {
     const value = Number(e.target.value);
-    if (value > total) {
-      alert('Discount cannot exceed total sale amount.');
+    if (value > 10% total) {
+      alert('Discount cannot exceed 10%.');
       return;
     }
     setDiscount(value);
