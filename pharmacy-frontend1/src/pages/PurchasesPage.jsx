@@ -4,7 +4,7 @@ import axios from 'axios';
 import './PurchasesPage.css';
 
 function PurchasesPage() {
-  const API = import.meta.env.VITE_API_URL;
+  const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const [purchases, setPurchases] = useState([]);
   const [medicines, setMedicines] = useState([]);
   const [form, setForm] = useState({ medicineId: '', quantity: '', purchasePrice: '', supplier: '' });

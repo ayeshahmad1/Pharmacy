@@ -6,9 +6,20 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || user.role !== 'admin') {
-      alert('Access denied: Admins only');
+    try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        alert('Access denied: Admins only');
+        navigate('/');
+        return;
+      }
+      const user = JSON.parse(userStr);
+      if (!user || user.role !== 'admin') {
+        alert('Access denied: Admins only');
+        navigate('/');
+      }
+    } catch (err) {
+      console.error('Error parsing user from localStorage:', err);
       navigate('/');
     }
   }, [navigate]);

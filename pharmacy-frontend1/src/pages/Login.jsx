@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
-  const API = import.meta.env.VITE_API_URL;
+  const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

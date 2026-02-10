@@ -1,9 +1,11 @@
+// routes/saleRoutes.js
 const express = require('express');
 const router = express.Router();
-const protect = require('../middleware/authMiddleware');
-const { createSale, getSales } = require('../controllers/saleController');
+const { createSale, getSales, getSalesByDate, closeDayByDate } = require('../controllers/saleController');
 
-router.get('/', /*protect,*/ getSales);
-router.post('/', /*protect, */ createSale);
+router.get('/', getSales);
+router.post('/', createSale);
+router.get('/by-date', getSalesByDate);
+router.post('/close-day', closeDayByDate);
 
 module.exports = router;

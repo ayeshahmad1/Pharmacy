@@ -1,12 +1,28 @@
 import React, { forwardRef } from 'react';
 import './ReceiptPrint.css';
 
-const Receipt = forwardRef(({ cart, total, discount, netTotal, amountReceived, changeDue }, ref) => (
+// Helper function to format date/time in GMT+5
+const formatGMT5 = (date) => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return dateObj.toLocaleString('en-US', {
+    timeZone: 'Asia/Karachi', // GMT+5
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+};
+
+const ReceiptPrint = forwardRef(({ cart = [], total = 0, discount = 0, netTotal = 0, amountReceived = 0, changeDue = 0, customerName = '' }, ref) => (
   <div className="receipt-container" ref={ref}>
     <div className="receipt-header">
       {/* <img src="/18234108_v1033-b-04-b.svg" alt="Logo" className="receipt-logo" /> */}
       <h3>Dr. Saima Clinic</h3>
-      <p>Date: {new Date().toLocaleString()}</p>
+      <p>Date: {formatGMT5(new Date())}</p>
+      {customerName && <p>Customer: {customerName}</p>}
     </div>
     <hr />
     <table className="receipt-table">
@@ -41,8 +57,6 @@ const Receipt = forwardRef(({ cart, total, discount, netTotal, amountReceived, c
   </div>
 ));
 
-const ReceiptPrint = forwardRef((props, ref) => (
-  <Receipt {...props} ref={ref} />
-));
+ReceiptPrint.displayName = 'ReceiptPrint';
 
 export default ReceiptPrint;

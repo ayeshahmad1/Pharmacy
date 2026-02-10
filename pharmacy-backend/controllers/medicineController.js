@@ -22,7 +22,18 @@ exports.addMedicine = async (req, res) => {
 
 exports.updateMedicine = async (req, res) => {
   try {
+    // Prevent direct quantity updates - quantity should only be changed via purchases/sales
+    // to maintain data integrity and prevent conflicts
+    if (req.body.hasOwnProperty('quantity')) {
+      return res.status(400).json({ 
+        error: 'Cannot update quantity directly. Use purchase or sale endpoints to modify stock quantity.' 
+      });
+    }
+
     const med = await Medicine.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!med) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
     res.json(med);
   } catch (err) {
     console.error(err);

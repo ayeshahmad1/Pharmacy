@@ -3,7 +3,7 @@ import axios from 'axios';
 import './MedicinesPage.css';
 
 function MedicinesPage() {
-  const API = import.meta.env.VITE_API_URL;
+  const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const [medicines, setMedicines] = useState([]);
   const [form, setForm] = useState({ name: '', type: '', batchNo: '', expiryDate: '', quantity: '', price: '', supplier: '' });
   const [editingId, setEditingId] = useState(null);
@@ -22,19 +22,20 @@ function MedicinesPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      await axios.put(`${API}/medicines/${editingId}`, form);
-      setEditingId(null);
-    } else {
-      await axios.post(`${API}/medicines`, form);
-    }
-    setForm({ name: '', type: '', batchNo: '', expiryDate: '', quantity: '', price: '', supplier: '' });
-
     try {
+      if (editingId) {
+        await axios.put(`${API}/medicines/${editingId}`, form);
+        setEditingId(null);
+      } else {
+        await axios.post(`${API}/medicines`, form);
+      }
+      setForm({ name: '', type: '', batchNo: '', expiryDate: '', quantity: '', price: '', supplier: '' });
+
       const res = await axios.get(`${API}/medicines`);
       setMedicines(res.data);
     } catch (error) {
-      console.error('Error fetching medicines:', error);
+      console.error('Error submitting medicine:', error);
+      alert('Error saving medicine: ' + (error?.response?.data?.error || error.message));
     }
   };
 
@@ -44,12 +45,14 @@ function MedicinesPage() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`${API}/medicines/${id}`);
+    if (!window.confirm('Are you sure you want to delete this medicine?')) return;
     try {
+      await axios.delete(`${API}/medicines/${id}`);
       const res = await axios.get(`${API}/medicines`);
       setMedicines(res.data);
     } catch (error) {
-      console.error('Error fetching medicines:', error);
+      console.error('Error deleting medicine:', error);
+      alert('Error deleting medicine: ' + (error?.response?.data?.error || error.message));
     }
   };
 
@@ -64,6 +67,10 @@ function MedicinesPage() {
           <option value="capsule">Capsule</option>
           <option value="syrup">Syrup</option>
           <option value="injection">Injection</option>
+          <option value="cream">Cream</option>
+          <option value="sachet">Sachet</option>
+          <option value="gel">Gel</option>
+          <option value="milk">Milk</option>
         </select>
         <input type="text" placeholder="batchNo" value={form.batchNo} onChange={(e) => setForm({ ...form, batchNo: e.target.value })} required />
         <input type="date" placeholder="expiryDate" value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} required />
