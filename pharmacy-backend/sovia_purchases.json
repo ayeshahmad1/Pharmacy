@@ -1,0 +1,102 @@
+[
+  {
+    "_id": "6981aeff6db68819215a4e79",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 200,
+    "purchasePrice": 9350,
+    "supplier": "med life",
+    "discount": 0,
+    "purchaseDate": "2026-02-03T08:17:03.986Z",
+    "__v": 0
+  },
+  {
+    "_id": "6989f6f9555a99f76927374a",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 400,
+    "purchasePrice": 14030,
+    "supplier": "Medlife",
+    "discount": 0,
+    "purchaseDate": "2026-02-09T15:02:17.324Z",
+    "__v": 0
+  },
+  {
+    "_id": "6993419010be0701cf32fa5c",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 400,
+    "purchasePrice": 14025,
+    "supplier": "Medlife",
+    "discount": 0,
+    "purchaseDate": "2026-02-16T16:10:56.398Z",
+    "__v": 0
+  },
+  {
+    "_id": "699e9b1aff2b2509bdc334e1",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 400,
+    "purchasePrice": 15460,
+    "supplier": "med life",
+    "discount": 0,
+    "purchaseDate": "2026-02-25T06:47:54.734Z",
+    "__v": 0
+  },
+  {
+    "_id": "69a5ab6d3471cf16cdb3506f",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 400,
+    "purchasePrice": 18700,
+    "supplier": "Medlife",
+    "discount": 0,
+    "purchaseDate": "2026-03-02T15:23:25.274Z",
+    "__v": 0
+  },
+  {
+    "_id": "69b13a4fe4dbda96c74890d2",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 400,
+    "purchasePrice": 14025,
+    "supplier": "Medlife",
+    "discount": 0,
+    "purchaseDate": "2026-03-11T09:47:59.904Z",
+    "__v": 0
+  },
+  {
+    "_id": "69b5a23acd9b4d40e7af79b3",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 20,
+    "purchasePrice": 1100,
+    "supplier": "Return",
+    "discount": 0,
+    "purchaseDate": "2026-03-14T18:00:26.552Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c402c6262fa0fe058d4110",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 600,
+    "purchasePrice": 21050,
+    "supplier": "MedLife",
+    "discount": 0,
+    "purchaseDate": "2026-03-25T15:44:06.330Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ca1df73fd1fff660362730",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 10,
+    "purchasePrice": 550,
+    "supplier": "Return",
+    "discount": 0,
+    "purchaseDate": "2026-03-30T06:53:43.365Z",
+    "__v": 0
+  },
+  {
+    "_id": "69d00438cd62053af6390b9c",
+    "medicineId": "697237c0e1d139dfd327a556",
+    "quantity": 10,
+    "purchasePrice": 500,
+    "supplier": "Return",
+    "discount": 0,
+    "purchaseDate": "2026-04-03T18:17:28.930Z",
+    "__v": 0
+  }
+]

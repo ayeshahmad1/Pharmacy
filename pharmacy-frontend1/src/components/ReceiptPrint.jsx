@@ -16,12 +16,13 @@ const formatGMT5 = (date) => {
   });
 };
 
-const ReceiptPrint = forwardRef(({ cart = [], total = 0, discount = 0, netTotal = 0, amountReceived = 0, changeDue = 0, customerName = '' }, ref) => (
+const ReceiptPrint = forwardRef(({ cart = [], total = 0, discount = 0, netTotal = 0, amountReceived = 0, changeDue = 0, customerName = '', billNumber = '' }, ref) => (
   <div className="receipt-container" ref={ref}>
     <div className="receipt-header">
       {/* <img src="/18234108_v1033-b-04-b.svg" alt="Logo" className="receipt-logo" /> */}
       <h3>Dr. Saima Clinic</h3>
       <p>Date: {formatGMT5(new Date())}</p>
+      {billNumber ? <p><strong>Bill:</strong> {billNumber}</p> : null}
       {customerName && <p>Customer: {customerName}</p>}
     </div>
     <hr />
@@ -49,7 +50,7 @@ const ReceiptPrint = forwardRef(({ cart = [], total = 0, discount = 0, netTotal 
     <p><strong>Net Total: <span className="right">Rs.{netTotal.toFixed(2)}</span></strong></p>
     <p>Paid: <span className="right">Rs.{amountReceived.toFixed(2)}</span></p>
     <div className="highlight-box">
-      <strong>Returned: <span className="right">Rs.{changeDue.toFixed(2)}</span></strong>
+      <strong>Change: <span className="right">Rs.{changeDue.toFixed(2)}</span></strong>
     </div>
     <div className="thank-you-box">
       <p>Thank you for visiting!</p>

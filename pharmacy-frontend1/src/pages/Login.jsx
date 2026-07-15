@@ -38,12 +38,14 @@ function Login() {
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleSubmit}>
-        <h2>Login</h2>
-        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+        <h2>Welcome Back</h2>
+        <p className="auth-subtitle">Sign in to Pharmacy Admin</p>
+        <div className="auth-divider" />
+        <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-        <button type="submit">Login</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <p>Don't have an account? <a href="/register">Register</a></p>
+        <button type="submit">Sign In</button>
+        {error && <p className="auth-error">{error}</p>}
+        <p>Don't have an account? <a href="/register">Register here</a></p>
       </form>
     </div>
   );

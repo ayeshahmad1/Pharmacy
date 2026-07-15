@@ -2,30 +2,117 @@
 const mongoose = require('mongoose');
 const Sale = require('../models/Sale');          // make sure this path is correct
 const Medicine = require('../models/Medicine');  // and this too
+const { allocateBillNumber } = require('../utils/allocateBillNumber');
 
-// ===== CREATE SALE (decrement stock safely) =====
+/**
+ * Rs. discount from checkout. If absent, legacy behaviour: 10% of subtotal.
+ */
+function resolveBillDiscountRs(originalTotal, orderDiscountRsRaw) {
+  if (orderDiscountRsRaw != null && orderDiscountRsRaw !== '') {
+    const n = Number(orderDiscountRsRaw);
+    if (!Number.isFinite(n) || n < 0) {
+      return 0;
+    }
+    const cap = Math.round(originalTotal * 100) / 100;
+    return Math.min(Math.max(0, Math.round(n * 100) / 100), cap);
+  }
+  return Math.round(originalTotal * 0.10 * 100) / 100;
+}
+
+function buildPricedLineItems(lineRows, originalTotal, netTotal) {
+  let assignedNet = 0;
+  return lineRows.map((row, i) => {
+    let lineNet;
+    if (i === lineRows.length - 1) {
+      lineNet = Math.round((netTotal - assignedNet) * 100) / 100;
+    } else {
+      lineNet = originalTotal > 0
+        ? Math.round((row.lineOrigTotal / originalTotal) * netTotal * 100) / 100
+        : 0;
+      assignedNet += lineNet;
+    }
+    const discountedPrice = row.quantity > 0
+      ? Math.round((lineNet / row.quantity) * 100) / 100
+      : 0;
+    return {
+      medicineId: row.medicineId,
+      quantity: row.quantity,
+      originalPrice: row.originalPrice,
+      discountedPrice
+    };
+  });
+}
+
+/** Fetch meds, stock check, subtotal; apply bill discount; split net across lines. */
+async function computeSalePricingFromItems(items, orderDiscountRsRaw, session) {
+  const lineRows = [];
+  for (const it of items) {
+    const qty = Number(it.quantity || 0);
+    const medQuery = Medicine.findById(it.medicineId).select('name price quantity');
+    if (session) {
+      medQuery.session(session);
+    }
+    const med = await medQuery;
+
+    if (!med) {
+      throw new Error(`Medicine with ID ${it.medicineId} not found`);
+    }
+    if ((med.quantity || 0) < qty) {
+      const name = med.name || 'Unknown';
+      const available = med.quantity ?? 0;
+      throw new Error(`Insufficient stock for ${name}. Available: ${available}, requested: ${qty}`);
+    }
+
+    const originalPrice = Number(med.price || 0);
+    if (originalPrice <= 0) {
+      throw new Error(`Invalid price for medicine ${med.name || it.medicineId}`);
+    }
+
+    const roundedOriginalPrice = Math.round(originalPrice * 100) / 100;
+    const lineOrigTotal = Math.round(roundedOriginalPrice * qty * 100) / 100;
+
+    lineRows.push({
+      medicineId: it.medicineId,
+      quantity: qty,
+      originalPrice: roundedOriginalPrice,
+      lineOrigTotal,
+      medName: med.name
+    });
+  }
+
+  const originalTotal = Math.round(lineRows.reduce((s, r) => s + r.lineOrigTotal, 0) * 100) / 100;
+  const totalDiscount = resolveBillDiscountRs(originalTotal, orderDiscountRsRaw);
+  const netTotal = Math.round((originalTotal - totalDiscount) * 100) / 100;
+  const processedItems = buildPricedLineItems(lineRows, originalTotal, netTotal);
+
+  const stockChecks = lineRows.map((r) => ({
+    medicineId: r.medicineId,
+    qty: r.quantity,
+    name: r.medName
+  }));
+
+  return { processedItems, originalTotal, totalDiscount, netTotal, stockChecks };
+}
+
+// ===== CREATE SALE (list prices from DB; bill discount from POS or legacy 10%) =====
 // POST /api/sales
+// Body: items [{ medicineId, quantity }], cashierId, orderDiscountRs? (Rs off subtotal), idempotencyKey?
 const createSale = async (req, res) => {
-  const { items, totalPrice, cashierId } = req.body;
-  console.log('req.body', req.body);
-  
+  const { items, cashierId, idempotencyKey } = req.body;
 
+  // Validate input
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'items are required' });
   }
   if (!cashierId) {
     return res.status(400).json({ error: 'cashierId is required' });
   }
-  if (typeof totalPrice !== 'number' || totalPrice < 0) {
-    return res.status(400).json({ error: 'totalPrice must be a valid non-negative number' });
-  }
 
-  // Validate each item
+  // Validate each item (only medicineId and quantity required)
   for (const it of items) {
     if (!it.medicineId) {
       return res.status(400).json({ error: 'Each item must have a medicineId' });
     }
-    // Validate medicineId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(it.medicineId)) {
       return res.status(400).json({ error: `Invalid medicineId format: ${it.medicineId}` });
     }
@@ -33,17 +120,21 @@ const createSale = async (req, res) => {
     if (qty <= 0 || !Number.isInteger(qty)) {
       return res.status(400).json({ error: 'Each item must have a positive integer quantity' });
     }
-    if (typeof it.price !== 'number' || it.price < 0 || isNaN(it.price)) {
-      return res.status(400).json({ error: 'Each item must have a valid non-negative price' });
-    }
   }
 
-  // Optional: Validate that totalPrice matches calculated total (with small tolerance for rounding)
-  const calculatedTotal = items.reduce((sum, it) => sum + (Number(it.quantity || 0) * Number(it.price || 0)), 0);
-  const priceDifference = Math.abs(calculatedTotal - totalPrice);
-  if (priceDifference > 0.01) { // Allow 1 cent tolerance for rounding
-    console.warn(`Price mismatch: calculated=${calculatedTotal}, provided=${totalPrice}`);
-    // Don't reject, but log warning - frontend might have rounding differences
+  // Check idempotency: if key exists, return existing sale without decrementing stock
+  if (idempotencyKey) {
+    const existingSale = await Sale.findOne({ idempotencyKey })
+      .populate({
+        path: 'cashierId',
+        select: 'name',
+        model: 'User'
+      })
+      .populate('items.medicineId', 'name');
+    
+    if (existingSale) {
+      return res.status(200).json(existingSale);
+    }
   }
 
   // Use transaction when available (Atlas / replica set). Fall back if not.
@@ -52,39 +143,44 @@ const createSale = async (req, res) => {
     let createdSale;
 
     await session.withTransaction(async () => {
-      // 1) Check and decrement each item atomically
-      for (const it of items) {
-        const qty = Number(it.quantity || 0);
-        if (!it.medicineId || qty <= 0) {
-          throw new Error('Invalid item in sale payload');
-        }
+      const {
+        processedItems,
+        originalTotal,
+        totalDiscount,
+        netTotal,
+        stockChecks
+      } = await computeSalePricingFromItems(items, req.body.orderDiscountRs, session);
 
-        console.log(`Decrementing ${it.medicineId} by ${qty}`);
-        
+      const billNumber = await allocateBillNumber(session);
+
+      const saleData = {
+        items: processedItems,
+        originalTotal,
+        totalDiscount,
+        netTotal,
+        totalPrice: netTotal,
+        billNumber,
+        cashierId,
+        idempotencyKey: idempotencyKey || undefined
+      };
+
+      const [saleDoc] = await Sale.create([saleData], { session });
+      createdSale = saleDoc._id;
+
+      for (const check of stockChecks) {
         const updated = await Medicine.findOneAndUpdate(
-          { _id: it.medicineId, quantity: { $gte: qty } },
-          { $inc: { quantity: -qty } },
-          { new: true, session, projection: { _id: 1, name: 1, quantity: 1 } }
+          { _id: check.medicineId, quantity: { $gte: check.qty } },
+          { $inc: { quantity: -check.qty } },
+          { session }
         );
 
-        console.log('Updated medicine:', updated);
-        
-
         if (!updated) {
-          // Check if medicine exists or if it's insufficient stock
-          const med = await Medicine.findById(it.medicineId).session(session).select('name quantity');
-          if (!med) {
-            throw new Error(`Medicine with ID ${it.medicineId} not found`);
-          }
-          const name = med.name || 'Unknown';
-          const left = med.quantity ?? 0;
-          throw new Error(`Insufficient stock for ${name}. Available: ${left}, requested: ${qty}`);
+          const med = await Medicine.findById(check.medicineId).session(session).select('name quantity');
+          const name = med?.name || 'Unknown';
+          const available = med?.quantity ?? 0;
+          throw new Error(`Stock check failed for ${name}. Available: ${available}, requested: ${check.qty}`);
         }
       }
-
-      // 2) Create the sale in the same txn
-      const [saleDoc] = await Sale.create([{ items, totalPrice, cashierId }], { session });
-      createdSale = saleDoc._id;
     });
 
     // 3) Populate for the client
@@ -98,60 +194,90 @@ const createSale = async (req, res) => {
 
     return res.status(201).json(populated);
   } catch (err) {
+    // Idempotency race: a concurrent request with the same key already created the
+    // sale (e.g. an auto-retry that overlapped the original). Return that sale as
+    // success instead of failing — stock was deducted exactly once by the winner.
+    if (idempotencyKey && (err?.code === 11000 || /E11000/i.test(String(err?.message || '')))) {
+      const existing = await Sale.findOne({ idempotencyKey })
+        .populate({ path: 'cashierId', select: 'name', model: 'User' })
+        .populate('items.medicineId', 'name');
+      if (existing) {
+        return res.status(200).json(existing);
+      }
+    }
+
     // Fallback for non-transaction environments (e.g., local single node)
     const msg = String(err && err.message || '');
     const looksLikeTxnUnsupported = /Transaction|replica set|not a replica set/i.test(msg);
 
     if (looksLikeTxnUnsupported) {
       try {
-        // Apply guarded decrements one by one; roll back on failure
-        const succeeded = [];
-        for (const it of items) {
-          const qty = Number(it.quantity || 0);
-          if (!it.medicineId || qty <= 0) {
-            // Rollback any previous deductions
-            for (const ok of succeeded) {
-              await Medicine.updateOne({ _id: ok.medicineId }, { $inc: { quantity: ok.qty } });
-            }
-            return res.status(400).json({ error: 'Invalid item in sale payload' });
+        let pricing;
+        try {
+          pricing = await computeSalePricingFromItems(items, req.body.orderDiscountRs, null);
+        } catch (calcErr) {
+          const m = String(calcErr.message || '');
+          if (/not found/i.test(m)) {
+            return res.status(404).json({ error: m });
           }
-
-          // Validate medicine exists before attempting to deduct
-          const med = await Medicine.findById(it.medicineId).select('name quantity');
-          if (!med) {
-            // Rollback any previous deductions
-            for (const ok of succeeded) {
-              await Medicine.updateOne({ _id: ok.medicineId }, { $inc: { quantity: ok.qty } });
-            }
-            return res.status(404).json({ error: `Medicine with ID ${it.medicineId} not found` });
-          }
-
-          const upd = await Medicine.updateOne(
-            { _id: it.medicineId, quantity: { $gte: qty } },
-            { $inc: { quantity: -qty } }
-          );
-          if (upd.modifiedCount !== 1) {
-            // Rollback any previous deductions
-            for (const ok of succeeded) {
-              await Medicine.updateOne({ _id: ok.medicineId }, { $inc: { quantity: ok.qty } });
-            }
-            const name = med?.name || 'Unknown';
-            const left = med?.quantity ?? 0;
-            return res.status(400).json({ error: `Insufficient stock for ${name}. Available: ${left}, requested: ${qty}` });
-          }
-          succeeded.push({ medicineId: it.medicineId, qty });
+          return res.status(400).json({ error: m });
         }
 
-        // Create sale - if this fails, rollback all stock deductions
+        const {
+          processedItems,
+          originalTotal,
+          totalDiscount,
+          netTotal,
+          stockChecks
+        } = pricing;
+
+        const billNumber = await allocateBillNumber();
+
+        // Step 2: Create sale document
         let sale;
         try {
-          sale = await Sale.create({ items, totalPrice, cashierId });
+          sale = await Sale.create({
+            items: processedItems,
+            originalTotal,
+            totalDiscount,
+            netTotal,
+            totalPrice: netTotal,
+            billNumber,
+            cashierId,
+            idempotencyKey: idempotencyKey || undefined
+          });
         } catch (saleError) {
-          // Critical: Rollback all stock deductions if sale creation fails
+          return res.status(500).json({ error: `Failed to create sale: ${saleError.message}` });
+        }
+
+        // Step 3: Decrement stock AFTER sale is created (rollback on failure)
+        const succeeded = [];
+        try {
+          for (const check of stockChecks) {
+            const upd = await Medicine.updateOne(
+              { _id: check.medicineId, quantity: { $gte: check.qty } },
+              { $inc: { quantity: -check.qty } }
+            );
+
+            if (upd.modifiedCount !== 1) {
+              // Rollback stock increments for already decremented items
+              for (const ok of succeeded) {
+                await Medicine.updateOne({ _id: ok.medicineId }, { $inc: { quantity: ok.qty } });
+              }
+              // Delete the sale document
+              await Sale.findByIdAndDelete(sale._id);
+              return res.status(400).json({ error: `Stock check failed for ${check.name}. Please try again.` });
+            }
+            succeeded.push({ medicineId: check.medicineId, qty: check.qty });
+          }
+        } catch (stockError) {
+          // Rollback stock increments
           for (const ok of succeeded) {
             await Medicine.updateOne({ _id: ok.medicineId }, { $inc: { quantity: ok.qty } });
           }
-          throw saleError;
+          // Delete the sale document
+          await Sale.findByIdAndDelete(sale._id);
+          throw stockError;
         }
 
         const populated = await Sale.findById(sale._id)
@@ -214,7 +340,8 @@ const getSalesByDate = async (req, res) => {
       .populate('items.medicineId', 'name')
       .sort({ createdAt: 1 });
 
-    const total = sales.reduce((sum, s) => sum + Number(s.totalPrice || 0), 0);
+    // Use netTotal for returns (negative) and regular sales (positive)
+    const total = sales.reduce((sum, s) => sum + Number(s.netTotal || s.totalPrice || 0), 0);
     res.json({ date, count: sales.length, total, sales });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -242,7 +369,8 @@ const closeDayByDate = async (req, res) => {
     .populate('items.medicineId', 'name')
     .sort({ createdAt: 1 });
 
-  const total = sales.reduce((sum, s) => sum + Number(s.totalPrice || 0), 0);
+  // Use netTotal for new sales, fallback to totalPrice for old sales (backward compatibility)
+  const total = sales.reduce((sum, s) => sum + Number(s.netTotal || s.totalPrice || 0), 0);
   const salesData = { date, count: sales.length, total, sales };
 
   const session = await mongoose.startSession();
@@ -255,10 +383,11 @@ const closeDayByDate = async (req, res) => {
           if (qty > 0 && item.medicineId) {
             // Handle both ObjectId and populated object
             const medicineId = item.medicineId._id || item.medicineId;
-            // Atomically restore stock using $inc
+            // Undo sale: add stock back. Undo return: remove stock that was restocked.
+            const delta = sale.isReturn ? -qty : qty;
             await Medicine.findByIdAndUpdate(
               medicineId,
-              { $inc: { quantity: qty } },
+              { $inc: { quantity: delta } },
               { session }
             );
           }
@@ -294,17 +423,18 @@ const closeDayByDate = async (req, res) => {
           for (const item of sale.items) {
             const qty = Number(item.quantity || 0);
             if (qty > 0 && item.medicineId) {
-              // Handle both ObjectId and populated object
               const medicineId = item.medicineId._id || item.medicineId;
+              const delta = sale.isReturn ? -qty : qty;
               await Medicine.findByIdAndUpdate(
                 medicineId,
-                { $inc: { quantity: qty } }
+                { $inc: { quantity: delta } }
               );
             }
           }
         }
 
-        const total = sales.reduce((sum, s) => sum + Number(s.totalPrice || 0), 0);
+        // Use netTotal for new sales, fallback to totalPrice for old sales
+        const total = sales.reduce((sum, s) => sum + Number(s.netTotal || s.totalPrice || 0), 0);
         const ids = sales.map(s => s._id);
         if (ids.length) {
           await Sale.deleteMany({ _id: { $in: ids } });

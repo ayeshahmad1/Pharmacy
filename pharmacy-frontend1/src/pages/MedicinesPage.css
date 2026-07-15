@@ -1,82 +1,144 @@
-
+/* ── Medicines / Inventory Page ─────────────────────────────── */
 
 .inventory-page {
-  padding: 24px;
-  background-color: #1e1e1e;
-  color: #fff;
   min-height: 100vh;
-  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg-base);
+  padding: 32px 28px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
 }
 
+/* Page header */
 .inventory-title {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #fff;
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+.inventory-title::before { content: '🧪'; -webkit-text-fill-color: initial; }
 
+/* Form card */
 .inventory-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-md);
 }
 
 .inventory-form input,
 .inventory-form select {
-  padding: 10px;
+  flex: 1;
+  min-width: 150px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
   font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: #000;
-  min-width: 140px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+.inventory-form input:focus,
+.inventory-form select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+.inventory-form input::placeholder { color: var(--text-muted); }
 
+/* Submit button */
 .submit-btn {
-  background-color: #333;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: #fff;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
+  padding: 11px 22px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--shadow-accent);
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+.submit-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.submit-btn:active { transform: translateY(0); }
+
+/* Table wrapper */
+.inventory-table-wrapper {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
 }
 
+/* Table */
 .inventory-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #fff;
-  color: #000;
-}
-
-.inventory-table th,
-.inventory-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .inventory-table th {
-  background-color: #f0f0f0;
-  font-weight: bold;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 14px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
 }
 
+.inventory-table td {
+  padding: 13px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  transition: background 0.15s;
+}
+
+.inventory-table tbody tr:last-child td { border-bottom: none; }
+
+.inventory-table tbody tr:hover td {
+  background: var(--bg-card-hover);
+}
+
+/* Action buttons */
 .edit-btn,
 .delete-btn {
-  margin: 2px;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
+  margin: 3px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.edit-btn:hover,
+.delete-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
 .edit-btn {
-  background-color: #007bff;
-  color: white;
+  background: rgba(124,111,255,0.2);
+  color: var(--accent);
+  border: 1px solid rgba(124,111,255,0.35);
 }
+.edit-btn:hover { background: rgba(124,111,255,0.3); }
 
 .delete-btn {
-  background-color: #dc3545;
-  color: white;
+  background: rgba(255,83,112,0.15);
+  color: var(--danger);
+  border: 1px solid rgba(255,83,112,0.3);
 }
+.delete-btn:hover { background: rgba(255,83,112,0.25); }

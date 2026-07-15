@@ -1,0 +1,59 @@
+{
+  "name": "pharmacy-pos-desktop",
+  "version": "1.0.3",
+  "description": "Pharmacy POS desktop application (Electron + Express + MongoDB Atlas)",
+  "main": "electron-main.js",
+  "author": "Ayesh",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis",
+    "release": "node scripts/release.js"
+  },
+  "build": {
+    "appId": "com.pharmacy.pos",
+    "productName": "Pharmacy POS",
+    "asar": true,
+    "asarUnpack": [
+      "pharmacy-backend/public/**"
+    ],
+    "files": [
+      "electron-main.js",
+      "preload.js",
+      "pharmacy-backend/**/*",
+      "!pharmacy-backend/node_modules/**",
+      "!pharmacy-backend/PharmacyPOS.exe",
+      "!pharmacy-backend/.env",
+      "!pharmacy-backend/bills_today.json",
+      "!pharmacy-backend/duplicates.json",
+      "!pharmacy-backend/purchases.json",
+      "!pharmacy-backend/sovia_data.json",
+      "!pharmacy-backend/sovia_purchases.json",
+      "!pharmacy-backend/health_output.txt"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Pharmacy POS"
+    }
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.0"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  }
+}

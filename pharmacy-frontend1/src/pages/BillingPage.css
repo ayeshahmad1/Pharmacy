@@ -1,152 +1,210 @@
-/* src/pages/BillingPage.css */
+/* ── Billing Page ───────────────────────────────────────────── */
 
+/* Page wrapper */
 .billing-wrapper {
   display: flex;
-  gap: 20px;
+  gap: 24px;
+  padding: 28px;
+  max-width: 1280px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  background: var(--bg-base);
+  box-sizing: border-box;
+}
+
+/* Panels */
+.billing-left,
+.billing-right {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   padding: 24px;
-  max-width: 1200px;
-  margin: 20px auto;
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
-  background-color: #f2f6fa;
+  box-shadow: var(--shadow-md);
 }
 
-.billing-left, .billing-right {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-.billing-left {
-  flex: 2;
-}
-
+.billing-left  { flex: 2; }
 .billing-right {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  border-left: 2px solid #e0e0e0;
+  gap: 14px;
+  min-width: 260px;
 }
 
+/* Panel headings */
 .billing-left h2,
 .billing-right h3 {
-  margin-bottom: 16px;
-  color: #005ea2;
+  color: var(--text-primary);
   text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
 }
 
+/* Medicine search form */
 .form-section {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .form-section select,
 .form-section input {
-  padding: 8px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  min-width: 160px;
+  flex: 1;
+  min-width: 150px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-section select:focus,
+.form-section input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
 }
 
 .form-section button {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff;
   padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--shadow-accent);
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
 }
+.form-section button:hover { opacity: 0.88; transform: translateY(-1px); }
+.form-section button:active { transform: translateY(0); }
 
-.form-section button:hover {
-  background-color: #0056b3;
-}
-
+/* Cart table */
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
+  background: transparent;
   margin-top: 10px;
 }
 
 th, td {
-  padding: 10px;
+  padding: 12px 14px;
   text-align: center;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-primary);
 }
 
 th {
-  background-color: #e9ecef;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 12px;
   font-weight: 600;
-  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--border);
 }
 
+tbody tr:hover td { background: var(--bg-card-hover); transition: background 0.15s; }
+tbody tr:last-child td { border-bottom: none; }
+
+/* Summary panel labels */
 .billing-right label {
-  font-weight: 500;
-  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-top: 4px;
 }
 
+/* Discount input */
 .billing-right input.discount-input {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 15px;
   width: 100%;
   box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.billing-right input.discount-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
 }
 
+/* Summary lines */
 .billing-right p {
-  font-size: 16px;
-  margin: 6px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 2px 0;
 }
 
-.billing-right button {
-  padding: 12px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 10px;
-  cursor: pointer;
+/* Grand total highlight */
+.billing-total-line {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: var(--teal) !important;
+  background: rgba(0, 212, 170, 0.08) !important;
+  border: 1px solid rgba(0, 212, 170, 0.2) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 14px !important;
+  text-align: center !important;
+  margin-top: 4px !important;
+}
+
+/* Complete sale button */
+.billing-right > button:not(.billing-right button[disabled]) {
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  color: #0a1a14;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 4px 16px var(--teal-glow);
+  margin-top: 4px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.billing-right > button:hover:not([disabled]) {
+  opacity: 0.88;
+  transform: translateY(-1px);
 }
 
 .billing-right button[disabled] {
-  background-color: #ccc;
+  background: var(--bg-surface);
+  color: var(--text-muted);
   cursor: not-allowed;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
 }
 
-.billing-right p:last-child {
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  background: #eee;
-  padding: 12px;
-  border-radius: 6px;
-  color: #000;
-}
-
+/* Hidden print container */
 .receipt-container-print {
   position: absolute;
   top: 0;
   left: -9999px;
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -154,90 +212,122 @@ th {
 }
 
 .modal-content {
-  background: white;
-  padding: 24px;
-  border-radius: 8px;
-  max-width: 90vw;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 28px 32px;
+  border-radius: var(--radius-xl);
+  max-width: 92vw;
   max-height: 90vh;
   overflow: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  color: #333;
+  box-shadow: var(--shadow-lg);
+  color: var(--text-primary);
+  animation: fadeSlideUp 0.3s ease both;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .modal-content h3 {
   margin-top: 0;
-  margin-bottom: 16px;
-  color: #005ea2;
+  margin-bottom: 18px;
+  color: var(--accent);
   text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
+/* Inventory table inside modal */
 .inventory-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
-  color: #000;
+  background: transparent;
+  color: var(--text-primary);
   margin: 10px 0;
 }
 
 .inventory-table th,
 .inventory-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
   text-align: center;
+  font-size: 14px;
 }
 
 .inventory-table th {
-  background-color: #f0f0f0;
-  font-weight: bold;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
 }
 
-.inventory-table tbody tr:hover {
-  background-color: #f9f9f9;
+.inventory-table tbody tr:hover td { background: var(--bg-card-hover); }
+.inventory-table tbody tr:last-child td { border-bottom: none; }
+
+.inventory-table tbody tr.low-stock td {
+  color: var(--danger);
+}
+.inventory-table tbody tr.low-stock:hover td {
+  background: rgba(255, 83, 112, 0.08);
 }
 
-.inventory-table tbody tr.low-stock {
-  background-color: #ffebee !important;
-  color: #c62828 !important;
-}
-
-.inventory-table tbody tr.low-stock:hover {
-  background-color: #ffcdd2 !important;
-}
-
+/* Medicine search in billing */
 .medicine-search-input {
-  padding: 8px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 14px;
   min-width: 160px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+.medicine-search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+.medicine-search-input::placeholder { color: var(--text-muted); }
 
 .medicine-suggestions {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-height: 300px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 280px;
   overflow-y: auto;
   z-index: 1000;
   margin-top: 4px;
 }
 
 .medicine-suggestion-item {
-  padding: 10px;
+  padding: 10px 16px;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
-  transition: background-color 0.2s;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  font-size: 14px;
+  color: var(--text-primary);
 }
 
 .medicine-suggestion-item:hover {
-  background-color: #f0f0f0;
+  background: rgba(124, 111, 255, 0.12);
+  color: var(--accent);
 }
 
-.medicine-suggestion-item:last-child {
-  border-bottom: none;
+.medicine-suggestion-item:last-child { border-bottom: none; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .billing-wrapper {
+    flex-direction: column;
+    padding: 16px;
+  }
+  .billing-right { min-width: unset; }
 }

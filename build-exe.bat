@@ -42,3 +42,4 @@ echo IMPORTANT: Make sure to include the .env file with your distribution!
 echo.
 pause
 
+

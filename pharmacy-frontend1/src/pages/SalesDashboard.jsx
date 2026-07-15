@@ -1,5 +1,6 @@
 // src/pages/SalesDashboard.jsx
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './SalesDashboard.css';
 
@@ -42,6 +43,7 @@ const formatTimeGMT5 = (date) => {
 };
 
 function SalesDashboard() {
+  const navigate = useNavigate();
   const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const [allSales, setAllSales] = useState([]);
   const [filteredSales, setFilteredSales] = useState([]);
@@ -79,7 +81,10 @@ function SalesDashboard() {
 
       setAllSales(allSalesData);
       setFilteredSales(filtered);
-      const total = filtered.reduce((sum, sale) => sum + (sale.totalPrice || 0), 0);
+      const total = filtered.reduce(
+        (sum, sale) => sum + Number(sale.netTotal ?? sale.totalPrice ?? 0),
+        0
+      );
       setTotalRevenue(total);
     } catch (err) {
       console.error('Error fetching sales:', err);
@@ -91,117 +96,105 @@ function SalesDashboard() {
 
   return (
     <div className="sales-page">
+      <button
+        type="button"
+        onClick={() => navigate('/dashboard')}
+        style={{ marginBottom: '16px', padding: '8px 16px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}
+      >
+        ← Back to Dashboard
+      </button>
       <h2 className="sales-title">Sales Dashboard</h2>
-      
+
       {/* Date Range Filters */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '15px', 
-        marginBottom: '20px', 
-        alignItems: 'flex-end',
-        flexWrap: 'wrap'
-      }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label style={{ fontWeight: '500' }}>From Date:</label>
+      <div className="sales-filter-bar">
+        <div className="sales-filter-group">
+          <label>From Date</label>
           <input
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            style={{
-              padding: '8px',
-              fontSize: '14px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              minWidth: '160px'
-            }}
           />
         </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label style={{ fontWeight: '500' }}>To Date:</label>
+
+        <div className="sales-filter-group">
+          <label>To Date</label>
           <input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            style={{
-              padding: '8px',
-              fontSize: '14px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              minWidth: '160px'
-            }}
           />
         </div>
-        
+
         <button
+          className="sales-load-btn"
           onClick={fetchSales}
           disabled={loading || !fromDate || !toDate}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: loading ? '#ccc' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            cursor: loading || !fromDate || !toDate ? 'not-allowed' : 'pointer',
-            minHeight: '40px'
-          }}
         >
           {loading ? 'Loading...' : 'Load Sales'}
         </button>
       </div>
 
       {filteredSales.length > 0 && (
-        <p className="sales-summary">Total Revenue: Rs.{totalRevenue.toFixed(2)} ({filteredSales.length} sale{filteredSales.length !== 1 ? 's' : ''})</p>
+        <p className="sales-summary">
+          Total Revenue: Rs.{totalRevenue.toFixed(2)} &nbsp;·&nbsp; {filteredSales.length} sale{filteredSales.length !== 1 ? 's' : ''}
+        </p>
       )}
 
       {filteredSales.length === 0 && fromDate && toDate && !loading && (
-        <p style={{ color: '#666', marginBottom: '20px' }}>No sales found for the selected date range.</p>
+        <p className="sales-empty">No sales found for the selected date range.</p>
       )}
 
       {filteredSales.length > 0 && (
-        <table className="sales-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Cashier</th>
-              <th>Items</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredSales.map((sale) => {
-              // Handle cashier name display - check multiple possible formats
-              let cashierName = 'N/A';
-              if (sale.cashierName) {
-                cashierName = sale.cashierName;
-              } else if (sale.cashierId) {
-                if (typeof sale.cashierId === 'object' && sale.cashierId !== null) {
-                  cashierName = sale.cashierId.name || 'N/A';
-                } else if (typeof sale.cashierId === 'string') {
-                  // If it's just an ID string, we can't get the name without another API call
-                  cashierName = 'Unknown Cashier';
+        <div className="sales-table-wrapper">
+          <table className="sales-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Cashier</th>
+                <th>Items</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredSales.map((sale) => {
+                let cashierName = 'N/A';
+                if (sale.cashierName) {
+                  cashierName = sale.cashierName;
+                } else if (sale.cashierId) {
+                  if (typeof sale.cashierId === 'object' && sale.cashierId !== null) {
+                    cashierName = sale.cashierId.name || 'N/A';
+                  } else if (typeof sale.cashierId === 'string') {
+                    cashierName = 'Unknown Cashier';
+                  }
                 }
-              }
-              
-              return (
-                <tr key={sale._id}>
-                  <td>{formatDateGMT5(sale.createdAt)}<br/><small style={{ color: '#666' }}>{formatTimeGMT5(sale.createdAt)}</small></td>
-                  <td>{cashierName}</td>
-                  <td>
-                    <ul>
-                      {sale.items.map((item, i) => (
-                        <li key={i}>{item.medicineId?.name || 'Unknown'} x{item.quantity} (Rs.{item.price})</li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td>Rs.{sale.totalPrice}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+
+                return (
+                  <tr key={sale._id}>
+                    <td>
+                      {formatDateGMT5(sale.createdAt)}
+                      <span className="sales-time-sub">{formatTimeGMT5(sale.createdAt)}</span>
+                    </td>
+                    <td>{cashierName}</td>
+                    <td>
+                      <ul>
+                        {sale.items.map((item, i) => {
+                          const unit = item.discountedPrice ?? item.originalPrice ?? item.price;
+                          return (
+                            <li key={i}>
+                              {item.medicineId?.name || 'Unknown'} ×{item.quantity}
+                              {unit != null && ` (Rs.${unit})`}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </td>
+                    <td>Rs.{sale.netTotal ?? sale.totalPrice}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

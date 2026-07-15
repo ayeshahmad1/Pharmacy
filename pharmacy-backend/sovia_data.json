@@ -1,0 +1,266 @@
+{
+  "meds": [
+    {
+      "_id": "697237c0e1d139dfd327a556",
+      "name": "Sovia 2.5 mg",
+      "type": "tablet",
+      "batchNo": "SV001",
+      "expiryDate": "2027-01-05T00:00:00.000Z",
+      "quantity": 60,
+      "price": 55,
+      "supplier": "Medlife",
+      "isActive": true,
+      "createdAt": "2026-01-22T14:44:16.101Z",
+      "updatedAt": "2026-04-06T13:57:47.818Z",
+      "__v": 0
+    }
+  ],
+  "sales": [
+    {
+      "_id": "69d38537c37a0484ef12505b",
+      "items": [
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 20,
+          "originalPrice": 55,
+          "discountedPrice": 50
+        }
+      ],
+      "originalTotal": 1100,
+      "totalDiscount": 100,
+      "netTotal": 1000,
+      "totalPrice": 1000,
+      "billNumber": "B-2026-04-06-00014",
+      "isManualReturn": false,
+      "cashierId": "689b58fdf57dbb8ab52ca4d0",
+      "isReturn": false,
+      "idempotencyKey": "sale_689b58fdf57dbb8ab52ca4d0_1775469878639",
+      "createdAt": "2026-04-06T10:04:39.190Z",
+      "updatedAt": "2026-04-06T10:04:39.190Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d37e26c37a0484ef125046",
+      "items": [
+        {
+          "medicineId": "689480060bcc916c481612ce",
+          "quantity": 15,
+          "originalPrice": 2.63,
+          "discountedPrice": 2.38
+        },
+        {
+          "medicineId": "6883e5097c7bb4d45541fb7b",
+          "quantity": 15,
+          "originalPrice": 13.5,
+          "discountedPrice": 12.2
+        },
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 30,
+          "originalPrice": 55,
+          "discountedPrice": 49.71
+        }
+      ],
+      "originalTotal": 1891.95,
+      "totalDiscount": 181.95,
+      "netTotal": 1710,
+      "totalPrice": 1710,
+      "billNumber": "B-2026-04-06-00013",
+      "isManualReturn": false,
+      "cashierId": "689b58fdf57dbb8ab52ca4d0",
+      "isReturn": false,
+      "idempotencyKey": "sale_689b58fdf57dbb8ab52ca4d0_1775468069966",
+      "createdAt": "2026-04-06T09:34:30.855Z",
+      "updatedAt": "2026-04-06T09:34:30.855Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d37076c37a0484ef125021",
+      "items": [
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 10,
+          "originalPrice": 55,
+          "discountedPrice": 50
+        }
+      ],
+      "originalTotal": 550,
+      "totalDiscount": 50,
+      "netTotal": 500,
+      "totalPrice": 500,
+      "billNumber": "B-2026-04-06-00011",
+      "isManualReturn": false,
+      "cashierId": "689b58fdf57dbb8ab52ca4d0",
+      "isReturn": false,
+      "idempotencyKey": "sale_689b58fdf57dbb8ab52ca4d0_1775464565847",
+      "createdAt": "2026-04-06T08:36:06.373Z",
+      "updatedAt": "2026-04-06T08:36:06.373Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d15e2c14b277d564b78e74",
+      "items": [
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 10,
+          "price": 55
+        }
+      ],
+      "totalPrice": 500,
+      "cashierId": "68780a2294c861d7c79bedd0",
+      "createdAt": "2026-04-04T18:53:32.930Z",
+      "updatedAt": "2026-04-04T18:53:32.930Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d14fa414b277d564b78e60",
+      "items": [
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 30,
+          "price": 55
+        },
+        {
+          "medicineId": "6883ee757c7bb4d45541fbda",
+          "quantity": 10,
+          "price": 19.23
+        },
+        {
+          "medicineId": "69ca45b63fd1fff66036278f",
+          "quantity": 1,
+          "price": 727
+        },
+        {
+          "medicineId": "6894842b0bcc916c4816133f",
+          "quantity": 1,
+          "price": 20
+        }
+      ],
+      "totalPrice": 2500,
+      "cashierId": "68780a2294c861d7c79bedd0",
+      "createdAt": "2026-04-04T17:51:32.940Z",
+      "updatedAt": "2026-04-04T17:51:32.940Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d0032bcd62053af6390b80",
+      "items": [
+        {
+          "medicineId": "69329913d3d166c2caf8b5f5",
+          "quantity": 5,
+          "price": 18.46
+        },
+        {
+          "medicineId": "69b52af254737db4376577b6",
+          "quantity": 10,
+          "price": 25
+        },
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 10,
+          "price": 55
+        }
+      ],
+      "totalPrice": 850,
+      "cashierId": "689b58fdf57dbb8ab52ca4d0",
+      "createdAt": "2026-04-03T18:12:59.391Z",
+      "updatedAt": "2026-04-03T18:12:59.391Z",
+      "__v": 0
+    },
+    {
+      "_id": "69cffe8014d1604b1c8a3976",
+      "items": [
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 10,
+          "price": 55
+        }
+      ],
+      "totalPrice": 500,
+      "cashierId": "689b58fdf57dbb8ab52ca4d0",
+      "createdAt": "2026-04-03T17:53:04.586Z",
+      "updatedAt": "2026-04-03T17:53:04.586Z",
+      "__v": 0
+    },
+    {
+      "_id": "69cfeeba14d1604b1c8a38fd",
+      "items": [
+        {
+          "medicineId": "6883ee757c7bb4d45541fbda",
+          "quantity": 30,
+          "price": 19.23
+        },
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 30,
+          "price": 55
+        },
+        {
+          "medicineId": "69b52af254737db4376577b6",
+          "quantity": 30,
+          "price": 25
+        },
+        {
+          "medicineId": "69ca45b63fd1fff66036278f",
+          "quantity": 1,
+          "price": 727
+        },
+        {
+          "medicineId": "6894842b0bcc916c4816133f",
+          "quantity": 1,
+          "price": 20
+        }
+      ],
+      "totalPrice": 3600,
+      "cashierId": "689b58fdf57dbb8ab52ca4d0",
+      "createdAt": "2026-04-03T16:45:46.555Z",
+      "updatedAt": "2026-04-03T16:45:46.555Z",
+      "__v": 0
+    },
+    {
+      "_id": "69cfe22514d1604b1c8a38a2",
+      "items": [
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 20,
+          "price": 55
+        }
+      ],
+      "totalPrice": 1000,
+      "cashierId": "689b58fdf57dbb8ab52ca4d0",
+      "createdAt": "2026-04-03T15:52:05.211Z",
+      "updatedAt": "2026-04-03T15:52:05.211Z",
+      "__v": 0
+    },
+    {
+      "_id": "69ceb8c12b734b5943b92bb8",
+      "items": [
+        {
+          "medicineId": "6978876319636ec19dfc2c3d",
+          "quantity": 30,
+          "price": 4.1
+        },
+        {
+          "medicineId": "697237c0e1d139dfd327a556",
+          "quantity": 30,
+          "price": 55
+        },
+        {
+          "medicineId": "689480060bcc916c481612ce",
+          "quantity": 30,
+          "price": 2.63
+        },
+        {
+          "medicineId": "69329913d3d166c2caf8b5f5",
+          "quantity": 30,
+          "price": 18.46
+        }
+      ],
+      "totalPrice": 2200.0000000000005,
+      "cashierId": "68780a2294c861d7c79bedd0",
+      "createdAt": "2026-04-02T18:43:13.682Z",
+      "updatedAt": "2026-04-02T18:43:13.682Z",
+      "__v": 0
+    }
+  ]
+}

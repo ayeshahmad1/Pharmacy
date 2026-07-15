@@ -1,0 +1,60 @@
+{
+  "sale12": {
+    "_id": "69d37b16c37a0484ef125031",
+    "items": [
+      {
+        "medicineId": "689f4ed0847b4c2e0314c441",
+        "quantity": 8,
+        "originalPrice": 13.1,
+        "discountedPrice": 11.85
+      },
+      {
+        "medicineId": "689f4e61847b4c2e0314c43e",
+        "quantity": 8,
+        "originalPrice": 30,
+        "discountedPrice": 27.14
+      },
+      {
+        "medicineId": "68c59c5de83692ecfc4563fb",
+        "quantity": 4,
+        "originalPrice": 22.75,
+        "discountedPrice": 20.58
+      },
+      {
+        "medicineId": "6883e79e7c7bb4d45541fba2",
+        "quantity": 1,
+        "originalPrice": 1200,
+        "discountedPrice": 1085.71
+      }
+    ],
+    "originalTotal": 1635.8,
+    "totalDiscount": 155.8,
+    "netTotal": 1480,
+    "totalPrice": 1480,
+    "billNumber": "B-2026-04-06-00012",
+    "isManualReturn": false,
+    "cashierId": "689b58fdf57dbb8ab52ca4d0",
+    "isReturn": false,
+    "idempotencyKey": "sale_689b58fdf57dbb8ab52ca4d0_1775467285332",
+    "createdAt": "2026-04-06T09:21:26.370Z",
+    "updatedAt": "2026-04-06T09:21:26.370Z",
+    "__v": 0
+  },
+  "allBills": [
+    "B-2026-04-06-00001",
+    "B-2026-04-06-00002",
+    "B-2026-04-06-00003",
+    "B-2026-04-06-00004",
+    "B-2026-04-06-00005",
+    "B-2026-04-06-00006",
+    "B-2026-04-06-00007",
+    "B-2026-04-06-00008",
+    "B-2026-04-06-00009",
+    "B-2026-04-06-00010",
+    "B-2026-04-06-00011",
+    "B-2026-04-06-00012",
+    "B-2026-04-06-00013",
+    "B-2026-04-06-00014",
+    "B-2026-04-06-00015"
+  ]
+}

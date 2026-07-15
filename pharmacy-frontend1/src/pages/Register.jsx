@@ -54,12 +54,11 @@ function Register() {
       alert('Registration successful! Please log in.');
       navigate('/'); // go to Login
     } catch (err) {
-      console.error('Register error:', err);
-      const msg =
+      const serverMsg =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
-        'Registration failed. Try a different email.';
-      setError(msg);
+        '';
+      setError(serverMsg || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -69,6 +68,8 @@ function Register() {
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleSubmit}>
         <h2>Create Account</h2>
+        <p className="auth-subtitle">Register a new pharmacy user</p>
+        <div className="auth-divider" />
 
         <input
           type="text"
@@ -82,7 +83,7 @@ function Register() {
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder="Email address"
           value={form.email}
           onChange={onChange}
           required
@@ -120,9 +121,16 @@ function Register() {
           {loading ? 'Creating...' : 'Register'}
         </button>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && (
+          <p className="auth-error">
+            {error}
+            {error.toLowerCase().includes('already') && (
+              <><br /><Link to="/" style={{ color: 'var(--danger)', fontWeight: 700 }}> → Sign in instead</Link></>
+            )}
+          </p>
+        )}
         <p>
-          Already have an account? <Link to="/">Login</Link>
+          Already have an account? <Link to="/">Sign in</Link>
         </p>
       </form>
     </div>
